@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>클래스 피드백 — Google Classroom 자동 채점·피드백</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --line:#e3e7ef; --ink:#1f2733; --muted:#6b7480;
+    --brand:#1a73e8; --brand-d:#1557b0; --warnbg:#fef7e0; --warnline:#f1d97a; --warn:#8a6d00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"Noto Sans KR",-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.6}
+  .wrap{max-width:680px;margin:0 auto;padding:48px 18px 64px}
+  .logo{font-size:34px;text-align:center;margin-bottom:6px}
+  h1{font-size:24px;text-align:center;margin:0 0 6px}
+  .sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:30px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:18px}
+  .lead{font-size:15px;margin:0 0 18px;text-align:center;color:#3c4655}
+  .btn{display:block;width:100%;text-decoration:none;text-align:center;
+       background:var(--brand);color:#fff;font-size:16px;font-weight:700;
+       padding:16px;border-radius:10px;margin-bottom:12px;transition:.15s}
+  .btn:hover{background:var(--brand-d)}
+  .btn .domain{display:block;font-size:13px;font-weight:500;opacity:.9;margin-top:2px}
+  .btn:last-child{margin-bottom:0}
+  .note{background:var(--warnbg);border:1px solid var(--warnline);color:var(--warn);
+        font-size:13px;padding:11px 13px;border-radius:9px;margin-top:14px;line-height:1.7}
+  h2{font-size:16px;margin:0 0 10px}
+  ol{margin:0;padding-left:20px}
+  ol li{margin-bottom:7px}
+  .muted{color:var(--muted);font-size:13px}
+  a.inline{color:var(--brand)}
+  .foot{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+  .foot-msg{color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 8px;font-style:italic}
+  .foot-contact{color:var(--muted);font-size:12.5px;margin:0}
+  .foot-contact a{color:var(--brand);text-decoration:none}
+  .foot-contact a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">📝</div>
+  <h1>클래스 피드백</h1>
+  <div class="sub">Google Classroom 자동 채점 · 피드백 도구</div>
+
+  <div class="card">
+    <p class="lead">본인이 Classroom을 운영하는 <b>계정에 맞는 버튼</b>을 눌러 들어가세요.</p>
+
+    <a class="btn" href="https://script.google.com/a/macros/sc.gyo6.net/s/AKfycbysH3rtIsOw2GXxgtSIi_JcEPRaZsC8VzIy_cn4Comt-Rv5dCczPNRsC-C-EH3h79LY/exec">
+      @sc.gyo6.net 계정으로 열기
+    </a>
+
+    <a class="btn" href="https://script.google.com/a/macros/aiep.gbe.kr/s/AKfycbx-I4_1C6ujut6ySAIUJN2ZuR2-H9MhTvAXSILfg2YDFseJzdt64pYeeDPGFZQ3CEUX/exec">
+      @aiep.gbe.kr 계정으로 열기
+    </a>
+
+    <div class="note">
+      버튼을 눌렀을 때 권한 요청이나 로그인 화면이 뜨면, <b>해당 도메인 계정으로 로그인되어 있는지</b> 확인하세요.
+      다른 도메인 계정으로는 열리지 않습니다. 처음 한 번은 권한 허용이 필요합니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>처음 사용하는 선생님께</h2>
+    <ol>
+      <li>위에서 <b>본인 계정에 맞는 버튼</b>을 누릅니다.</li>
+      <li>처음엔 <b>권한 허용</b> 화면이 한 번 나옵니다 → 허용을 누릅니다.</li>
+      <li>화면 맨 위에서 <b>Gemini API 키</b>를 한 번 입력·저장합니다. 이후에는 다시 넣지 않아도 됩니다(본인 계정에만 저장).</li>
+      <li>수업 → 과제 → 채점기준표를 고르고 <b>채점 시작</b>을 누르면 됩니다.</li>
+    </ol>
+    <div class="note" style="background:#e8f0fe;border-color:#c5d9fb;color:var(--brand-d)">
+      Gemini API 키는 <a class="inline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>에서 무료로 발급해 복사·붙여넣기 하면 됩니다.
+      키 확인·삭제 버튼은 앱 화면 상단에 있습니다.
+    </div>
+  </div>
+
+  <div class="foot">
+    <p class="foot-msg">이름 모를 동료가 보내는 작은 응원. 오늘 퇴근길 발걸음은 평소보다 가벼우시길 바라며. 🕊️</p>
+    <p class="foot-contact">문의·제안 환영합니다 · <a href="mailto:cosmos15973@gmail.com">cosmos15973@gmail.com</a></p>
+  </div>
+</div>
+</body>
+</html>
