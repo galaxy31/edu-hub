@@ -1,1 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세특 생성기 — Google Classroom 기반 세부능력 및 특기사항 작성</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --line:#e3e7ef; --ink:#1f2733; --muted:#6b7480;
+    --brand:#0f766e; --brand-d:#115e59; --warnbg:#fef7e0; --warnline:#f1d97a; --warn:#8a6d00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"Noto Sans KR",-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.6}
+  .wrap{max-width:680px;margin:0 auto;padding:48px 18px 64px}
+  .logo{font-size:34px;text-align:center;margin-bottom:6px}
+  h1{font-size:24px;text-align:center;margin:0 0 6px}
+  .sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:30px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:18px}
+  .lead{font-size:15px;margin:0 0 18px;text-align:center;color:#3c4655}
+  .btn{display:block;width:100%;text-decoration:none;text-align:center;
+       background:var(--brand);color:#fff;font-size:16px;font-weight:700;
+       padding:16px;border-radius:10px;margin-bottom:12px;transition:.15s}
+  .btn:hover{background:var(--brand-d)}
+  .btn .domain{display:block;font-size:13px;font-weight:500;opacity:.9;margin-top:2px}
+  .btn:last-child{margin-bottom:0}
+  .note{background:var(--warnbg);border:1px solid var(--warnline);color:var(--warn);
+        font-size:13px;padding:11px 13px;border-radius:9px;margin-top:14px;line-height:1.7}
+  h2{font-size:16px;margin:0 0 10px}
+  ol{margin:0;padding-left:20px}
+  ol li{margin-bottom:7px}
+  .muted{color:var(--muted);font-size:13px}
+  a.inline{color:var(--brand)}
+  .foot{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+  .foot-msg{color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 8px;font-style:italic}
+  .foot-contact{color:var(--muted);font-size:12.5px;margin:0}
+  .foot-contact a{color:var(--brand);text-decoration:none}
+  .foot-contact a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">🎓</div>
+  <h1>세특 생성기</h1>
+  <div class="sub">Google Classroom 제출물 기반 세부능력 및 특기사항 작성 도구</div>
 
+  <div class="card">
+    <p class="lead">본인이 Classroom을 운영하는 <b>계정에 맞는 버튼</b>을 눌러 들어가세요.</p>
+
+    <a class="btn" href="https://script.google.com/a/macros/sc.gyo6.net/s/AKfycbyMKSoUhT0wxROetOPGPDT-Zq7L2izDzTMXeWOy6qxZPo5aLVz_S8JIcrmLVDlD_D3Ttg/exec">
+      @sc.gyo6.net 계정으로 열기
+    </a>
+
+    <a class="btn" href="https://script.google.com/a/macros/aiep.gbe.kr/s/AKfycbyB_6GYukBrCAMhD-6TUPgp9Mg8_qCMVLY3olJ1ToY5dxXasmI13jUOkRQUIhA6o-JGKQ/exec">
+      @aiep.gbe.kr 계정으로 열기
+    </a>
+
+    <div class="note">
+      버튼을 눌렀을 때 권한 요청이나 로그인 화면이 뜨면, <b>해당 도메인 계정으로 로그인되어 있는지</b> 확인하세요.
+      다른 도메인 계정으로는 열리지 않습니다. 처음 한 번은 권한 허용이 필요합니다.
+    </div>
+
+    <div class="note" style="background:#fce8e6;border-color:#f3b9b2;color:#a8392c">
+      <b>“현재 파일을 열 수 없습니다 / 주소를 확인한 다음 다시 시도해 주세요”</b> 같은 Google Drive 화면이 뜨나요?
+      이는 페이지 오류가 아니라, <b>버튼과 다른 도메인 계정으로 로그인된 상태</b>라는 뜻입니다.
+      누른 버튼에 맞는 계정(@sc.gyo6.net 또는 @aiep.gbe.kr)으로 다시 로그인한 뒤, 이 페이지에서 버튼을 다시 눌러주세요.
+      여러 구글 계정을 함께 쓰는 경우, 브라우저 오른쪽 위 프로필에서 계정을 전환하거나 시크릿 창에서 해당 계정으로만 로그인하면 가장 확실합니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>처음 사용하는 선생님께</h2>
+    <ol>
+      <li>위에서 <b>본인 계정에 맞는 버튼</b>을 누릅니다.</li>
+      <li>처음엔 <b>권한 허용</b> 화면이 한 번 나옵니다 → 허용을 누릅니다. (“확인되지 않은 앱” 경고가 뜨면 <b>고급 → 이동</b>을 눌러 진행)</li>
+      <li>왼쪽 설정에서 <b>AI 제공사</b>를 고르고 <b>API 키</b>를 한 번 입력·저장합니다. 이후에는 다시 넣지 않아도 됩니다(본인 계정에만 저장).</li>
+      <li><b>수업 목록 불러오기</b> → 수업·과제 선택 → <b>① 제출물 스캔</b> → <b>② 전체 세특 생성</b> 순서로 진행합니다.</li>
+      <li>생성된 내용을 검토·수정한 뒤 <b>③ 시트로 저장</b>을 누르면, 선택한 수업 이름으로 시트가 만들어져 저장됩니다.</li>
+    </ol>
+    <div class="note" style="background:#e8f0fe;border-color:#c5d9fb;color:#1557b0">
+      Google Gemini는 <a class="inline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>에서 무료 등급으로 API 키를 발급받아 시작할 수 있습니다.
+      Claude·OpenAI도 선택할 수 있으며, 각 제공사의 키 발급 방법은 앱 화면의 안내를 참고하세요. 키 보기·저장 버튼은 앱 화면 왼쪽에 있습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>세특 작성 규칙 안내</h2>
+    <p class="muted" style="margin:0 0 10px">기본 작성 지침에는 다음 규칙이 이미 반영되어 있습니다.</p>
+    <ol>
+      <li>공백 포함 <b>500자를 넘지 않도록</b> 자동으로 관리됩니다.</li>
+      <li>학생 <b>이름·반·번호 등 인적사항</b>은 본문에 들어가지 않습니다.</li>
+      <li>“학생은~” 같은 <b>주어 지칭 없이</b> 행위·역량을 바로 서술합니다.</li>
+      <li><b>강점과 성장 등 긍정적 내용</b>만 담고, 부정적·개선요구 표현은 넣지 않습니다.</li>
+    </ol>
+    <div class="note" style="background:#e8f0fe;border-color:#c5d9fb;color:#1557b0">
+      생성된 세특은 <b>초안</b>입니다. 반드시 교사가 사실 여부와 표현을 확인·수정한 뒤 학교생활기록부에 반영해 주세요.
+    </div>
+  </div>
+
+  <div class="foot">
+    <p class="foot-msg">이름 모를 동료가 보내는 작은 응원. 오늘 퇴근길 발걸음은 평소보다 가벼우시길 바라며. 🕊️</p>
+    <p class="foot-contact">문의·제안 환영합니다 · <a href="mailto:lifescience153+feedback@gmail.com">lifescience153+feedback@gmail.com</a></p>
+  </div>
+</div>
+</body>
+</html>
