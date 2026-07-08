@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>과제 작성 패턴 분석기</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --ink: #1f2430;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #3b5bdb;
+      --accent-soft: #eef1ff;
+      --warn-bg: #fff4e0;
+      --warn-ink: #9a5b00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0 auto;
+      font-family: -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 32px 24px;
+      max-width: 720px;
+      line-height: 1.65;
+    }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 26px; }
+    h2 { font-size: 15px; margin: 0 0 12px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
 
+    /* 도메인 선택 버튼 */
+    .domain-grid { display: flex; gap: 12px; }
+    .domain-grid a {
+      flex: 1;
+      display: block;
+      text-align: center;
+      padding: 18px 12px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      background: #fff;
+      transition: border-color .15s, background .15s;
+    }
+    .domain-grid a:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .domain-grid .domain { font-weight: 700; font-size: 15px; color: var(--accent); }
+    .pick-hint { font-size: 12.5px; color: var(--muted); margin-top: 12px; }
+
+    /* 안내 목록 */
+    ol.guide { margin: 0; padding-left: 20px; font-size: 13.5px; }
+    ol.guide li { margin-bottom: 10px; }
+    ol.guide li:last-child { margin-bottom: 0; }
+    ul.plain { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+    ul.plain li { margin-bottom: 4px; }
+    .kbd {
+      display: inline-block; background: var(--accent-soft); color: var(--accent);
+      border-radius: 5px; padding: 1px 7px; font-size: 12.5px; font-weight: 600;
+    }
+    .warnbox {
+      background: var(--warn-bg); color: var(--warn-ink);
+      border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 12px;
+    }
+
+    footer{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+    footer .foot-msg{color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 8px;font-style:italic}
+    footer .foot-contact{color:var(--muted);font-size:12.5px;margin:0}
+    footer .foot-contact a{color:var(--accent);text-decoration:none}
+    footer .foot-contact a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <h1>📄 과제 작성 패턴 분석기</h1>
+  <div class="subtitle">구글 클래스룸 과제(구글 문서)의 작성 과정을 분석해 붙여넣기 의심 구간을 학생별로 정리해주는 교사용 도구입니다.</div>
+
+  <div class="card">
+    <h2>1. 소속 계정에 맞는 입구로 들어가세요</h2>
+    <div class="domain-grid">
+      <a href="https://script.google.com/a/macros/sc.gyo6.net/s/AKfycbxX7bY_GdDHhuBmoa8Ia4IzTjQ2PsOHkEOUcLctQtvFIF0fcAJpOVRXj8cBnDjrTKhQww/exec">
+        <div class="domain">@sc.gyo6.net</div>
+      </a>
+      <a href="https://script.google.com/a/macros/aiep.gbe.kr/s/AKfycbzEnWPfebmch3xctyhqnWzmNFW58IcSD_BW3-IJhRkVD90NzOMsOnffhEO5UWQIRCJhGA/exec">
+        <div class="domain">@aiep.gbe.kr</div>
+      </a>
+    </div>
+    <div class="pick-hint">
+      두 앱은 기능이 동일하며, 계정 도메인별로 분리 배포되어 있을 뿐입니다.
+      본인이 <strong>클래스룸 수업을 운영하는 계정의 도메인</strong>과 일치하는 입구를 선택하세요.
+      다른 도메인의 앱에는 접속할 수 없습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. 처음 사용할 때 — 권한 승인 (1회)</h2>
+    <ol class="guide">
+      <li>브라우저에 여러 구글 계정이 로그인되어 있다면, <strong>해당 도메인 계정이 선택된 상태</strong>인지 먼저 확인하세요. 개인 Gmail이 선택돼 있으면 접속 자체가 거부됩니다. (시크릿 창에서 해당 계정만 로그인하는 것이 가장 확실합니다)</li>
+      <li>첫 접속 시 권한 요청 화면이 나타납니다. 이 도구는 <strong>클래스룸 수업·과제·제출물 조회</strong>와 <strong>문서 버전 기록 읽기</strong> 권한만 요청하며, 문서를 수정하거나 삭제하는 권한은 요청하지 않습니다.</li>
+      <li>"Google에서 확인하지 않은 앱" 경고가 나타날 수 있습니다. 교사 개인이 제작한 내부용 도구라서 나타나는 정상적인 화면입니다. <span class="kbd">고급</span> → <span class="kbd">이동(안전하지 않음)</span> → <span class="kbd">허용</span> 순으로 진행하면 됩니다.</li>
+    </ol>
+    <div class="warnbox">
+      ⚠️ 권한 승인 단계에서 "관리자가 차단했습니다" 류의 메시지가 나오면, 소속 기관의 Workspace 관리자가 앱 접근을 제한해둔 경우입니다. 이때는 관리자에게 문의가 필요합니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. 분석이 가능하려면 — 과제 배포 방식이 중요합니다</h2>
+    <ol class="guide">
+      <li>클래스룸에서 과제를 만들 때 문서를 <strong>"학생별로 사본 제공"</strong> 방식으로 첨부해야 합니다. 이 방식이어야 학생마다 별도의 구글 문서가 만들어지고, 그 문서의 버전 기록을 추적할 수 있습니다.</li>
+      <li>학생이 Word 파일(.docx)이나 PDF로 제출한 경우, 버전 기록이 존재하지 않아 분석할 수 없습니다("분석불가"로 표시됨).</li>
+      <li>구글 문서의 버전 기록은 시간이 지나면 오래된 항목이 병합·정리될 수 있으므로, <strong>과제 마감 직후 분석하는 것</strong>이 가장 정확합니다.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>4. 자주 묻는 질문</h2>
+    <ul class="plain">
+      <li><strong>학생 계정으로도 쓸 수 있나요?</strong> — 아니요. 클래스룸에서 교사로 등록된 계정만 수업·제출물 목록을 불러올 수 있습니다.</li>
+      <li><strong>학생에게 알림이 가나요?</strong> — 아니요. 이미 제출된 문서의 기록을 읽기만 하므로 학생에게 어떤 알림도 가지 않고 문서도 변경되지 않습니다.</li>
+      <li><strong>분석 데이터가 어딘가에 저장되나요?</strong> — 아니요. 결과는 화면에만 표시되고 별도 서버나 시트에 저장되지 않습니다. 창을 닫으면 사라지므로, 기록이 필요하면 화면을 캡처해두세요.</li>
+      <li><strong>공동 교사도 쓸 수 있나요?</strong> — 해당 수업에 공동 교사로 등록되어 있고 제출 문서에 접근 권한이 있다면 가능합니다.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p class="foot-msg">이름 모를 동료가 보내는 작은 응원. 오늘 퇴근길 발걸음은 평소보다 가벼우시길 바라며. 🕊️</p>
+    <p class="foot-contact">문의·제안 환영합니다 · <a href="mailto:lifescience153+feedback@gmail.com">lifescience153+feedback@gmail.com</a></p>
+  </footer>
+</body>
+</html>
