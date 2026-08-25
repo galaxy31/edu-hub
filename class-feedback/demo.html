@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>클래스 피드백 — 데모</title>
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#ffffff; --line:#e3e7ef; --ink:#1f2733; --muted:#6b7480;
+      --brand:#1a73e8; --brand-d:#1557b0; --ok:#137333; --okbg:#e6f4ea;
+      --warn:#8a6d00; --warnbg:#fef7e0; --warnline:#f1d97a; --err:#b00020;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.55}
+    .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 80px}
+    h1{font-size:20px;margin:0 0 2px}
+    .sub{color:var(--muted);font-size:13px;margin-bottom:22px}
+    .demo-badge{flex-shrink:0;background:#fff4e5;border:1px solid #f0c68a;color:#8a5a00;font-size:12.5px;padding:6px 12px;border-radius:999px;white-space:nowrap;font-weight:600}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+    .card h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+    .step{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:12px;font-weight:700}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 5px}
+    input[type=text],input[type=password],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+    textarea{resize:vertical;min-height:60px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row>div{flex:1;min-width:220px}
+    button{cursor:pointer;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;font-family:inherit}
+    .btn{background:var(--brand);color:#fff}
+    .btn:hover{background:var(--brand-d)}
+    .btn:disabled{background:#b9c5da;cursor:not-allowed}
+    .btn-ghost{background:#eef2f9;color:var(--brand-d)}
+    .btn-ok{background:var(--ok);color:#fff}
+    .btn-sm{padding:6px 11px;font-size:12.5px}
+    .btn-danger{background:#fce8e6;color:var(--err)}
+    .muted{color:var(--muted);font-size:12.5px}
+    .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600}
+    .pill-ok{background:var(--okbg);color:var(--ok)}
+    .pill-warn{background:var(--warnbg);color:var(--warn);border:1px solid var(--warnline)}
+    .hide{display:none}
+    .note{background:var(--warnbg);border:1px solid var(--warnline);color:var(--warn);padding:9px 11px;border-radius:8px;font-size:12.5px;margin-top:8px;line-height:1.7}
+    .foldhead{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .foldhead .caret{color:var(--muted);font-size:12px}
+    .statusmsg{font-size:12.5px;color:var(--muted);min-height:16px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .spin{display:inline-block;width:14px;height:14px;border:2px solid #cfd8e6;border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    a{color:var(--brand)}
+
+    .dropzone{border:2px dashed #c3cee0;border-radius:10px;padding:18px;text-align:center;color:var(--muted);background:#fafcff}
+    .uprow{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .uprow>div{flex:1;min-width:240px}
+
+    .rubric-prev{margin-top:12px}
+    .rubric-prev .crit{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+    .rubric-prev .crit .ct{font-weight:700;margin-bottom:2px}
+    .rubric-prev .crit .cd{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+    .lvtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+    .lvtbl th,.lvtbl td{border:1px solid var(--line);padding:6px 8px;vertical-align:middle}
+    .lvtbl th{background:#f0f4fb;font-weight:600;white-space:nowrap}
+    .lvtbl td.p{text-align:center;font-weight:700;white-space:nowrap;width:64px}
+    .lvtbl td.g{text-align:center;white-space:nowrap;width:70px}
+
+    .rtblwrap{overflow:auto;margin-top:10px}
+    table.rt{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+    table.rt th,table.rt td{border:1px solid var(--line);padding:7px 8px;vertical-align:middle}
+    table.rt thead th{background:#f0f4fb;font-weight:600;position:sticky;top:0;z-index:1}
+    table.rt thead th.sortable{cursor:pointer;user-select:none}
+    table.rt thead th.sortable:hover{background:#e4ebf7}
+    table.rt thead th .arrow{font-size:10px;color:var(--brand);margin-left:3px}
+    table.rt th.crit-h{white-space:normal;font-size:12px;line-height:1.3;text-align:center}
+    table.rt col.c-name{width:64px}
+    table.rt col.c-crit{width:64px}
+    table.rt col.c-total{width:52px}
+    table.rt col.c-appr{width:48px}
+    table.rt col.c-stat{width:52px}
+    table.rt col.c-del{width:46px}
+    table.rt td.ccell{text-align:center;white-space:nowrap;padding:0}
+    table.rt td.total{text-align:center;white-space:nowrap;font-weight:700}
+    table.rt th.name-h,table.rt td.namecell{text-align:center}
+    table.rt td.namecell{word-break:break-all}
+    table.rt td.appr,table.rt td.stat,table.rt td.del{text-align:center;white-space:nowrap}
+    .delx{background:none;border:none;color:#b0b7c3;font-size:15px;padding:2px 6px;cursor:pointer;font-weight:700}
+    .delx:hover{color:var(--err)}
+    .fbbox{width:100%;min-height:92px;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-family:inherit;font-size:13px;line-height:1.5}
+    tr.review{background:var(--warnbg)}
+    .progress{height:8px;background:#e6ebf4;border-radius:6px;overflow:hidden;margin-top:10px}
+    .bar{height:100%;background:var(--brand);width:0%;transition:width .2s}
+
+    .scorebtn{width:100%;background:none;border:none;padding:9px 4px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;border-radius:4px}
+    .scorebtn:hover{background:#eef4ff;color:var(--brand-d)}
+    .scorebtn.active{background:#dbe9ff;color:var(--brand-d)}
+    tr.reasonrow{display:none}
+    tr.reasonrow.open{display:table-row}
+    tr.reasonrow td{padding:0;border-top:none}
+    .reasonbox{background:#eef4ff;border-top:1px dashed #c5d9fb;padding:9px 12px;font-size:12.5px;color:#2c4a75;line-height:1.6;text-align:left}
+    .reasonbox b{color:var(--brand-d)}
+
+    table.corr{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;margin-top:6px}
+    table.corr th,table.corr td{border:1px solid var(--line);padding:8px 10px;vertical-align:middle;text-align:left;word-break:break-word}
+    table.corr thead th{background:#f0f4fb;font-weight:600}
+    table.corr td.cst{white-space:nowrap;font-weight:600;background:#fafbfd}
+    table.corr td.cfile{font-size:12px}
+    table.corr td.cfile a{color:var(--brand)}
+    table.corr td.csrc{color:#b00020}
+    table.corr td.cfix{color:#137333;font-weight:600}
+    .cempty{color:var(--muted);text-align:center;padding:18px}
+    .ccnt{color:var(--muted);font-size:12.5px;margin-top:8px}
+
+    .foot{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+    .foot-msg{color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 8px;font-style:italic}
+    .foot-contact{color:var(--muted);font-size:12.5px;margin:0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+    <div>
+      <h1>클래스 피드백 — Google Classroom 자동 채점 · 피드백</h1>
+      <div class="sub">체험용 데모입니다. 실제 Classroom·Gemini에 연결되지 않으며, 모든 데이터는 예시입니다.</div>
+    </div>
+    <div class="demo-badge">🎬 DEMO · 예시 데이터</div>
+  </div>
+
+  <!-- KEY -->
+  <div class="card">
+    <div class="foldhead" onclick="tg('keyBody','keyCaret')">
+      <h2 style="margin:0"><span>🔑</span> Gemini API 키 <span class="pill pill-ok">저장됨 (데모)</span></h2>
+      <span class="caret" id="keyCaret">▼ 펼치기</span>
+    </div>
+    <div id="keyBody" class="hide" style="margin-top:12px">
+      <div class="row">
+        <div style="flex:2">
+          <label>API 키 (본인 계정에만 저장됩니다)</label>
+          <input type="password" placeholder="●●●● 저장됨 (데모에서는 입력하지 않아도 됩니다)" disabled>
+        </div>
+        <div>
+          <label>모델 선택</label>
+          <select disabled><option>gemini-2.5-flash (안정 · 권장)</option></select>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-sm" disabled>저장</button>
+        <button class="btn-ghost btn-sm" disabled>🔍 저장된 키 확인</button>
+        <button class="btn-danger btn-sm" disabled>🗑 키 삭제</button>
+      </div>
+      <div class="note">실제 앱에서는 선생님이 발급한 Gemini API 키를 한 번만 입력하면, 본인 계정에만 저장되어 다음부터는 다시 넣지 않아도 됩니다.</div>
+    </div>
+  </div>
+
+  <!-- TONE -->
+  <div class="card">
+    <div class="foldhead" onclick="tg('toneBody','toneCaret')">
+      <h2 style="margin:0"><span>🗣️</span> 피드백 어조 샘플</h2>
+      <span class="caret" id="toneCaret">▼ 펼치기</span>
+    </div>
+    <div id="toneBody" class="hide" style="margin-top:12px">
+      <label>샘플 1 (선생님 말투를 학습합니다)</label>
+      <textarea>주제 분석 능력이 뛰어납니다. 특히 근거 자료를 논리적으로 연결한 점이 돋보입니다. 다만 결론 부분에서 핵심 주장을 좀 더 명확하게 정리해주면 더욱 완성도 높은 글이 될 것입니다.</textarea>
+      <label style="margin-top:10px">샘플 2</label>
+      <textarea>창의적인 시각으로 접근한 점이 인상적입니다. 내용 구성은 훌륭하나 각 단락이 하나의 중심 내용을 담도록 좀 더 신경 써보세요. 기초는 충분히 갖춰져 있으니 조금만 다듬으면 훨씬 좋아질 거예요.</textarea>
+      <div class="muted" style="margin-top:6px">선생님 본인의 피드백 문체로 바꾸면 결과가 더 자연스러워집니다.</div>
+    </div>
+  </div>
+
+  <!-- 1. COURSE -->
+  <div class="card">
+    <h2><span class="step">1</span> 수업 · 과제 선택</h2>
+    <div class="row">
+      <div>
+        <label>수업</label>
+        <select id="course" onchange="onCourse()">
+          <option value="">— 수업 선택 —</option>
+          <option value="1">1학년 과학</option>
+          <option value="2" selected>2학년 과학</option>
+          <option value="3">3학년 과학</option>
+        </select>
+      </div>
+      <div>
+        <label>과제</label>
+        <select id="assignment" onchange="resetAll()">
+          <option value="">— 과제 선택 —</option>
+          <option value="a1">2학년 과학 과제1</option>
+          <option value="a2" selected>2학년 과학 과제2</option>
+          <option value="a3">2학년 과학 과제3</option>
+        </select>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn-ghost btn-sm" onclick="alert('데모에서는 예시 수업 목록이 이미 불러와져 있습니다.')">🔄 수업 목록 새로고침</button>
+      <button class="btn-ghost btn-sm" onclick="showStatus()">📋 제출 현황 보기</button>
+      <span class="statusmsg" id="selMsg">3개 수업을 불러왔습니다.</span>
+    </div>
+    <div id="statusBox" class="hide" style="margin-top:10px"></div>
+  </div>
+
+  <!-- 2. RUBRIC -->
+  <div class="card">
+    <h2><span class="step">2</span> 채점기준표</h2>
+    <div class="dropzone">
+      파일을 여기로 <b>드래그</b>하거나, 이미지를 <b>복사 후 붙여넣기(Ctrl+V)</b> 하세요
+      <div style="margin-top:8px"><button class="btn-ghost btn-sm" onclick="alert('데모에서는 예시 기준표가 이미 분석되어 있습니다.')">파일 선택</button></div>
+    </div>
+    <div class="uprow">
+      <div>
+        <label>드라이브 링크 / 파일 ID</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" placeholder="https://drive.google.com/..." disabled>
+          <button class="btn btn-sm" disabled style="white-space:nowrap">불러오기</button>
+        </div>
+      </div>
+      <div>
+        <label>드라이브에서 검색</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" placeholder="파일 이름으로 검색" disabled>
+          <button class="btn-ghost btn-sm" disabled style="white-space:nowrap">검색</button>
+        </div>
+      </div>
+    </div>
+    <div class="statusmsg" style="margin-top:10px" id="rubricMsg"></div>
+    <div id="rubricPrev" class="rubric-prev"></div>
+
+    <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
+      <div class="foldhead" onclick="tg('rubricHelpBody','rubricHelpCaret')">
+        <span style="font-size:13px;font-weight:600">ℹ️ 분석한 기준표를 클래스룸 과제에 등록하는 방법</span>
+        <span class="caret" id="rubricHelpCaret">▼ 펼치기</span>
+      </div>
+      <div id="rubricHelpBody" class="hide" style="margin-top:10px;font-size:13px;color:#3c4655;line-height:1.7">
+        기준표를 분석하면 <b>📄 기준표 시트 열기</b> 링크와 함께 클래스룸 형식의 시트가 자동으로 만들어집니다.
+        <ol style="margin:8px 0 0;padding-left:20px">
+          <li>구글 클래스룸에서 해당 <b>과제를 열어 편집</b>합니다.</li>
+          <li><b>채점기준표(Rubric)</b> 항목의 <b>+ 기준표</b>를 누릅니다.</li>
+          <li><b>스프레드시트에서 가져오기</b>를 선택합니다.</li>
+          <li>만들어진 <b>「클래스룸 기준표 - …」</b> 시트를 고르면 항목·배점이 그대로 등록됩니다.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. GRADE -->
+  <div class="card">
+    <h2><span class="step">3</span> 채점 · 검토 · 등록</h2>
+    <div class="toolbar">
+      <button class="btn" id="gradeBtn" onclick="startGrading()">▶ 채점 시작</button>
+      <button class="btn-danger hide" id="pauseBtn" onclick="pauseGrading()">⏸ 정지</button>
+      <span class="statusmsg" id="gradeMsg"></span>
+      <button class="btn-ghost btn-sm hide" id="selAllBtn" onclick="toggleSelectAll()" style="margin-left:auto">전체 선택</button>
+    </div>
+    <div id="progressWrap" class="hide"><div class="progress"><div class="bar" id="bar"></div></div></div>
+    <div id="resultWrap"></div>
+    <div id="postWrap" class="hide" style="margin-top:14px">
+      <div class="note" style="background:#e8f0fe;border-color:#c5d9fb;color:var(--brand-d)">
+        각 평가요소의 점수를 클릭하면 채점 이유를 확인할 수 있습니다.<br>
+        ⚠️ 표시된 학생은 빈 양식으로 의심되어 자동 채점하지 않았습니다. 직접 확인 후 필요하면 피드백을 입력하고 승인하세요. 승인 체크는 기본으로 꺼져 있습니다.
+      </div>
+      <div class="toolbar" style="margin-top:12px">
+        <button class="btn-ok" onclick="demoPost()">✅ 승인한 학생 클래스룸에 등록</button>
+        <button class="btn-ghost" onclick="alert('데모에서는 시트를 만들지 않습니다.\n실제 앱에서는 채점 결과가 구글 시트로 저장되고 링크가 제공됩니다.')">📊 채점 결과 시트로 내보내기</button>
+        <span class="statusmsg" id="postMsg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. CORRECTIONS -->
+  <div class="card">
+    <div class="foldhead" onclick="tg('corrBody','corrCaret')">
+      <h2 style="margin:0"><span class="step">4</span> 문맥 교정 내역 <span style="font-weight:400;color:var(--muted);font-size:13px">(채점에는 영향 없음 · 참고용)</span></h2>
+      <span class="caret" id="corrCaret">▼ 펼치기</span>
+    </div>
+    <div id="corrBody" class="hide" style="margin-top:12px">
+      <div class="note">
+        ⚠️ 이 목록은 <b>모델이 스스로 인지한 사례만</b> 담습니다. 실제 발생한 모든 교정을 보장하지 않으며,
+        실행할 때마다 일부 다르게 보고될 수 있습니다. 점수에 의문이 있으면 <b>원본 파일을 확인</b>하세요.
+        채점은 채점기준표에 의해서만 이루어집니다.
+      </div>
+      <div id="corrContent"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p class="foot-msg">이름 모를 동료가 보내는 작은 응원. 오늘 퇴근길 발걸음은 평소보다 가벼우시길 바라며. 🕊️</p>
+    <p class="foot-contact">문의·제안 환영합니다 · lifescience153+feedback@gmail.com</p>
+  </div>
+</div>
+
+<script>
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tg(bodyId,caretId){var b=$(bodyId);b.classList.toggle('hide');$(caretId).textContent=b.classList.contains('hide')?'▼ 펼치기':'▲ 접기';}
+
+/* ===== 예시 채점기준표 ===== */
+var RUBRIC={
+  title:'광합성과 식물의 구조 탐구 보고서',
+  criteria:[
+    {title:'광합성 원리 이해', description:'광합성에 필요한 요소와 생성물을 과학적으로 설명하는가',
+     levels:[
+      {points:40,title:'A',description:'빛, 물, 이산화탄소와 생성물(포도당·산소)의 관계를 오류 없이 정확하게 설명함.'},
+      {points:30,title:'B',description:'광합성 요소를 대체로 설명하였으나 일부 용어나 과정에 오류가 있음.'},
+      {points:20,title:'C',description:'광합성의 기본 개념만 언급하고 과학적 원리를 설명하지 못함.'}
+     ]},
+    {title:'실험 설계 및 관찰', description:'변인을 통제하여 실험을 설계하고 관찰 결과를 기록하는가',
+     levels:[
+      {points:30,title:'A',description:'조작변인과 통제변인을 명확히 구분하여 설계하고 관찰 결과를 체계적으로 기록함.'},
+      {points:20,title:'B',description:'실험을 설계하였으나 변인 통제가 일부 미흡하거나 기록이 불충분함.'},
+      {points:10,title:'C',description:'실험 설계가 과학적이지 않거나 관찰 기록이 거의 없음.'}
+     ]},
+    {title:'결론 도출 및 적용', description:'실험 결과로부터 타당한 결론을 이끌어내고 실생활에 적용하는가',
+     levels:[
+      {points:30,title:'A',description:'결과에 근거한 타당한 결론을 제시하고 실생활 사례와 논리적으로 연결함.'},
+      {points:20,title:'B',description:'결론을 제시하였으나 근거가 부족하거나 적용이 피상적임.'},
+      {points:10,title:'C',description:'결론이 실험 결과와 연관되지 않거나 제시하지 못함.'}
+     ]}
+  ]
+};
+
+/* ===== 예시 학생 데이터 ===== */
+var STUDENTS=[
+  {name:'김서준', file:'2학년과학_과제2_김서준.pdf', scores:[40,30,30], total:100,
+   reasons:['빛, 물, 이산화탄소가 포도당과 산소로 전환되는 과정을 화학적 관계까지 정확히 설명함. 최고 수준에 해당함.',
+            '빛의 세기를 조작변인으로, 온도와 물의 양을 통제변인으로 명확히 구분하여 설계하고 기포 수를 시간대별로 기록함.',
+            '빛의 세기와 광합성량의 비례 관계를 결과에 근거해 도출하고, 비닐하우스 보광 재배 사례와 연결함.'],
+   feedback:'광합성에 필요한 요소와 생성물의 관계를 화학적 수준까지 정확하게 설명한 점이 매우 뛰어납니다. 특히 변인을 명확히 구분하여 실험을 설계하고, 기포 수를 시간대별로 꼼꼼히 기록한 태도가 돋보입니다. 결론을 비닐하우스 재배와 연결한 부분에서 배운 내용을 실생활로 확장하는 힘이 느껴집니다. 지금의 탐구 자세를 계속 이어가면 훨씬 더 깊이 있는 탐구도 충분히 해낼 수 있을 거예요.',
+   corrections:[{o:'이산화탄산',c:'이산화탄소'},{o:'표도당',c:'포도당'}]},
+
+  {name:'이하은', file:'2학년과학_과제2_이하은.pdf', scores:[30,20,20], total:70,
+   reasons:['광합성 요소를 대체로 설명하였으나 산소가 생성물이 아닌 반응물로 서술된 부분이 있어 중간 수준으로 판단함.',
+            '빛의 세기를 바꾸며 실험했으나 물의 양이 함께 달라져 변인 통제가 미흡함. 관찰 기록은 비교적 성실함.',
+            '결론을 제시하였으나 실험 수치와의 연결이 약하고, 실생활 적용이 한 문장에 그쳐 피상적임.'],
+   feedback:'실험에 성실하게 참여하고 관찰 내용을 꾸준히 기록한 점이 좋습니다. 다만 산소가 광합성의 생성물이라는 점을 다시 한번 확인해보면 좋겠습니다. 또 빛의 세기를 바꿀 때 물의 양은 같게 유지해야 결과를 신뢰할 수 있다는 점도 기억해주세요. 결론을 쓸 때 관찰한 숫자를 근거로 들면 훨씬 설득력이 생깁니다. 기본기는 충분하니 이 부분만 보완하면 좋은 결과가 있을 거예요.',
+   corrections:[{o:'산소를 흡수하여',c:'산소를 방출하여'},{o:'광합성양',c:'광합성량'},{o:'일정하개',c:'일정하게'}]},
+
+  {name:'박도윤', file:'2학년과학_과제2_박도윤.pdf', scores:[20,30,20], total:70,
+   reasons:['광합성이 잎에서 일어난다는 기본 개념만 언급하고, 필요한 요소와 생성물의 관계를 설명하지 못해 최하 수준으로 판단함.',
+            '조작변인과 통제변인을 표로 정리하고 관찰 결과를 그래프로 나타내어 체계적으로 기록함.',
+            '결론은 제시하였으나 근거 서술이 짧고, 실생활 적용 내용이 구체적이지 않음.'],
+   feedback:'실험 설계를 표로 정리하고 결과를 그래프로 나타낸 점이 매우 훌륭합니다. 자료를 시각적으로 표현하는 능력이 돋보여요. 다만 광합성에 어떤 물질이 필요하고 무엇이 만들어지는지를 좀 더 자세히 설명해주면 보고서의 완성도가 크게 올라갈 것입니다. 결론에서도 그래프에서 읽어낸 값을 근거로 제시해보세요. 정리하는 힘이 좋으니 설명을 조금만 더하면 훨씬 좋아질 거예요.',
+   corrections:[{o:'엽록쳬',c:'엽록체'}]},
+
+  {name:'최유나', file:'2학년과학_과제2_최유나.pdf', scores:[40,20,30], total:90,
+   reasons:['광합성의 요소와 생성물을 정확히 설명하고 엽록체의 역할까지 오류 없이 서술하여 최고 수준에 해당함.',
+            '실험을 설계하였으나 통제변인 일부가 명시되지 않았고 관찰 횟수가 적어 기록이 다소 불충분함.',
+            '실험 결과에 근거하여 타당한 결론을 도출하고, 실내 식물 관리 사례와 논리적으로 연결함.'],
+   feedback:'광합성의 원리를 엽록체의 역할까지 짚어가며 정확하게 설명한 점이 인상적입니다. 결론을 실내 식물을 기르는 상황과 연결한 부분도 설득력 있게 읽혔습니다. 다만 실험에서 온도나 물의 양처럼 같게 유지해야 할 조건을 함께 적어두고, 관찰 횟수를 조금 늘리면 결과의 신뢰도가 더 높아질 것입니다. 개념 이해가 탄탄하니 실험 기록만 보완하면 훨씬 완성도 높은 보고서가 될 거예요.',
+   corrections:[]},
+
+  {name:'정민재', file:'2학년과학_과제2_정민재.pdf', blank:true,
+   reason:'답안 내용이 비어 있음 (빈 양식 의심 · 확인 필요)'}
+];
+
+var RESULTS=[], ROWREFS={}, GRADING=false, RUNTOKEN=0, allSelected=false, sortCol=null, sortDir=1;
+
+/* ===== 기준표 표시 ===== */
+function showRubric(){
+  $('rubricMsg').innerHTML='✓ '+esc(RUBRIC.title)+' · '+RUBRIC.criteria.length+'개 항목 · <a href="#" onclick="alert(\'데모에서는 시트가 생성되지 않습니다.\');return false;">📄 기준표 시트 열기</a>';
+  $('rubricPrev').innerHTML=RUBRIC.criteria.map(function(c){
+    var rows=c.levels.map(function(l){
+      return '<tr><td class="p">'+l.points+'점</td><td class="g">'+esc(l.title)+'</td><td>'+esc(l.description)+'</td></tr>';
+    }).join('');
+    return '<div class="crit"><div class="ct">'+esc(c.title)+'</div><div class="cd">'+esc(c.description)+'</div>'+
+      '<table class="lvtbl"><tr><th>배점</th><th>등급</th><th>수준 설명</th></tr>'+rows+'</table></div>';
+  }).join('');
+}
+
+/* ===== 제출 현황 ===== */
+function showStatus(){
+  var box=$('statusBox'); box.classList.remove('hide');
+  box.innerHTML='<span class="spin"></span> 제출 현황 확인 중…';
+  setTimeout(function(){
+    var rows=STUDENTS.map(function(s){
+      return '<tr><td>'+esc(s.name)+'</td><td style="text-align:center">제출완료</td><td style="text-align:center">있음</td></tr>';
+    }).join('');
+    box.innerHTML='<table class="lvtbl"><tr><th>학생</th><th>상태</th><th>첨부</th></tr>'+rows+'</table>';
+  },600);
+}
+
+function onCourse(){
+  var g=$('course').value, sel=$('assignment');
+  sel.innerHTML='<option value="">— 과제 선택 —</option>';
+  for(var i=1;i<=3;i++){
+    var o=document.createElement('option'); o.value='a'+i; o.textContent=g+'학년 과학 과제'+i;
+    if(i===2) o.selected=true;
+    sel.appendChild(o);
+  }
+  resetAll();
+}
+function resetAll(){
+  RUNTOKEN++; RESULTS=[]; ROWREFS={}; GRADING=false; allSelected=false;
+  $('resultWrap').innerHTML=''; $('postWrap').classList.add('hide');
+  $('selAllBtn').classList.add('hide'); $('selAllBtn').textContent='전체 선택';
+  $('progressWrap').classList.add('hide'); $('gradeMsg').textContent='';
+  $('pauseBtn').classList.add('hide'); $('gradeBtn').classList.remove('hide');
+  $('gradeBtn').disabled=false; $('gradeBtn').textContent='▶ 채점 시작';
+  $('corrContent').innerHTML=''; $('postMsg').textContent='';
+}
+
+/* ===== 채점 ===== */
+function gradedSet(){var s={};RESULTS.forEach(function(r){s[r.name]=1;});return s;}
+function refreshBtn(){$('gradeBtn').textContent=RESULTS.length>0?'▶ 다시 시작':'▶ 채점 시작';}
+
+function startGrading(){
+  if(GRADING) return;
+  if(!$('course').value||!$('assignment').value){$('gradeMsg').textContent='수업과 과제를 선택하세요.';return;}
+  var done=gradedSet();
+  var remaining=STUDENTS.filter(function(s){return !done[s.name];});
+  if(!remaining.length){
+    $('gradeMsg').textContent='✓ 모든 학생이 채점되었습니다 ('+RESULTS.length+'명).';
+    $('postWrap').classList.remove('hide'); $('selAllBtn').classList.remove('hide');
+    return;
+  }
+  if(!$('resultWrap').querySelector('table.rt')) buildTable();
+  GRADING=true;
+  var token=++RUNTOKEN;
+  $('gradeBtn').classList.add('hide');
+  $('pauseBtn').classList.remove('hide');
+  $('progressWrap').classList.remove('hide');
+  step(remaining,0,token);
+}
+function pauseGrading(){
+  if(!GRADING) return;
+  RUNTOKEN++; GRADING=false;
+  $('pauseBtn').classList.add('hide');
+  $('gradeBtn').classList.remove('hide'); refreshBtn();
+  $('gradeMsg').textContent='⏸ 정지됨 ('+RESULTS.length+'명 완료). 채점 중이던 학생은 기록하지 않았습니다. "다시 시작"을 누르면 남은 학생부터 이어서 채점합니다.';
+  $('postWrap').classList.remove('hide'); $('selAllBtn').classList.remove('hide');
+  rebuildCorrections();
+}
+function step(list,i,token){
+  if(token!==RUNTOKEN) return;
+  if(i>=list.length){
+    GRADING=false;
+    $('pauseBtn').classList.add('hide'); $('gradeBtn').classList.remove('hide'); refreshBtn();
+    $('bar').style.width='100%';
+    $('gradeMsg').textContent='✓ 채점 완료 (총 '+RESULTS.length+'명). 피드백을 검토하고 승인하세요.';
+    $('postWrap').classList.remove('hide'); $('selAllBtn').classList.remove('hide');
+    rebuildCorrections();
+    return;
+  }
+  var st=list[i];
+  $('gradeMsg').innerHTML='<span class="spin"></span> 채점 중… '+(i+1)+'/'+list.length+' · '+esc(st.name);
+  $('bar').style.width=Math.round(i/list.length*100)+'%';
+  setTimeout(function(){
+    if(token!==RUNTOKEN) return;
+    addRow(st); RESULTS.push(st);
+    step(list,i+1,token);
+  }, 1100);
+}
+
+function thSort(col,label,cls){
+  return '<th class="sortable'+(cls?' '+cls:'')+'" data-col="'+col+'" onclick="sortBy(\''+col+'\')">'+label+'<span class="arrow"></span></th>';
+}
+function buildTable(){
+  sortCol=null;sortDir=1;
+  var cols='<col class="c-name">'+RUBRIC.criteria.map(function(){return '<col class="c-crit">';}).join('')+
+           '<col class="c-total"><col><col class="c-appr"><col class="c-stat"><col class="c-del">';
+  var ths=RUBRIC.criteria.map(function(c,i){return thSort('crit:'+i,esc(c.title),'crit-h');}).join('');
+  $('resultWrap').innerHTML='<div class="rtblwrap"><table class="rt"><colgroup>'+cols+'</colgroup><thead><tr>'+
+    thSort('name','학생','name-h')+ths+thSort('total','총점')+thSort('feedback','피드백 (수정 가능)')+
+    thSort('appr','승인')+thSort('stat','상태')+'<th>삭제</th></tr></thead><tbody></tbody></table></div>';
+}
+
+function addRow(st){
+  var tb=$('resultWrap').querySelector('tbody');
+  var tr=document.createElement('tr');
+  if(st.blank) tr.className='review';
+  var nameCell='<td class="namecell">'+esc(st.name)+'<br><span class="muted"><a href="#" onclick="alert(\'데모에서는 파일이 열리지 않습니다.\');return false;">파일</a></span></td>';
+  var cells;
+  if(st.blank){
+    cells='<td class="ccell" colspan="'+(RUBRIC.criteria.length+1)+'"><span class="pill pill-warn">⚠ 검토 필요</span><br><span class="muted">'+esc(st.reason)+'</span></td>';
+  }else{
+    cells=st.scores.map(function(s,ci){return '<td class="ccell"><button type="button" class="scorebtn" data-ci="'+ci+'">'+s+'</button></td>';}).join('')+
+          '<td class="total">'+st.total+'</td>';
+  }
+  tr.innerHTML=nameCell+cells+
+    '<td class="fbcell"><textarea class="fbbox"></textarea></td>'+
+    '<td class="appr"><input type="checkbox" class="appr-cb"></td>'+
+    '<td class="stat">—</td>'+
+    '<td class="del"><button class="delx" title="이 행 삭제">✕</button></td>';
+  tb.appendChild(tr);
+
+  var reasonTr=document.createElement('tr');
+  reasonTr.className='reasonrow';
+  reasonTr.innerHTML='<td colspan="'+(RUBRIC.criteria.length+6)+'"><div class="reasonbox"></div></td>';
+  tb.appendChild(reasonTr);
+
+  var fb=tr.querySelector('.fbbox'); fb.value=st.feedback||'';
+  ROWREFS[st.name]={tr:tr,reasonTr:reasonTr,reasonBox:reasonTr.querySelector('.reasonbox'),
+                    fb:fb,cb:tr.querySelector('.appr-cb'),stat:tr.querySelector('.stat'),
+                    blank:!!st.blank,open:null};
+  if(!st.blank){
+    tr.querySelectorAll('.scorebtn').forEach(function(b){
+      b.onclick=function(){toggleReason(st.name,+b.getAttribute('data-ci'),b);};
+    });
+  }
+  tr.querySelector('.delx').onclick=function(){deleteRow(st.name);};
+}
+
+function toggleReason(name,ci,btn){
+  var ref=ROWREFS[name]; if(!ref) return;
+  var st=RESULTS.filter(function(r){return r.name===name;})[0]; if(!st) return;
+  if(ref.open!==null&&ref.open!==undefined){
+    var prev=ref.tr.querySelector('.scorebtn[data-ci="'+ref.open+'"]');
+    if(prev) prev.classList.remove('active');
+  }
+  if(ref.open===ci){
+    ref.reasonTr.classList.remove('open'); ref.reasonBox.innerHTML=''; ref.open=null;
+  }else{
+    ref.reasonBox.innerHTML='<b>['+esc(RUBRIC.criteria[ci].title)+' · '+st.scores[ci]+'점]</b> '+esc(st.reasons[ci]);
+    ref.reasonTr.classList.add('open'); btn.classList.add('active'); ref.open=ci;
+  }
+}
+
+function deleteRow(name){
+  var ref=ROWREFS[name];
+  if(ref){
+    if(ref.tr.parentNode) ref.tr.parentNode.removeChild(ref.tr);
+    if(ref.reasonTr.parentNode) ref.reasonTr.parentNode.removeChild(ref.reasonTr);
+  }
+  delete ROWREFS[name];
+  RESULTS=RESULTS.filter(function(r){return r.name!==name;});
+  if(!GRADING){refreshBtn();rebuildCorrections();}
+}
+
+function toggleSelectAll(){
+  allSelected=!allSelected;
+  Object.keys(ROWREFS).forEach(function(n){
+    var ref=ROWREFS[n]; if(ref.blank) return; ref.cb.checked=allSelected;
+  });
+  $('selAllBtn').textContent=allSelected?'전체 해제':'전체 선택';
+}
+
+function sortBy(col){
+  sortDir=(sortCol===col)?-sortDir:1; sortCol=col;
+  var arr=RESULTS.map(function(r){return {r:r,ref:ROWREFS[r.name]};}).filter(function(x){return x.ref;});
+  arr.sort(function(a,b){var ka=key(a,col),kb=key(b,col);return ka<kb?-1*sortDir:(ka>kb?1*sortDir:0);});
+  var tb=$('resultWrap').querySelector('tbody');
+  arr.forEach(function(x){tb.appendChild(x.ref.tr);tb.appendChild(x.ref.reasonTr);});
+  var ths=$('resultWrap').querySelectorAll('thead th');
+  ths.forEach(function(th){var a=th.querySelector('.arrow');if(a)a.textContent='';});
+  var act=$('resultWrap').querySelector('thead th[data-col="'+col+'"]');
+  if(act){var a=act.querySelector('.arrow');if(a)a.textContent=sortDir>0?'▲':'▼';}
+}
+function key(x,col){
+  var r=x.r,ref=x.ref;
+  if(col==='name') return r.name;
+  if(col==='feedback') return ref.fb.value;
+  if(col==='appr') return ref.cb.checked?1:0;
+  if(col==='stat') return ref.stat.textContent.trim();
+  if(col==='total') return r.blank?-Infinity:r.total;
+  if(col.indexOf('crit:')===0){var i=+col.split(':')[1];return r.blank?-Infinity:r.scores[i];}
+  return 0;
+}
+
+/* ===== 등록 (데모) ===== */
+function demoPost(){
+  var targets=Object.keys(ROWREFS).filter(function(n){return ROWREFS[n].cb.checked && ROWREFS[n].fb.value.trim();});
+  if(!targets.length){$('postMsg').textContent='승인되었고 피드백이 입력된 학생이 없습니다.';return;}
+  if(!confirm(targets.length+'명에게 클래스룸으로 피드백을 등록합니다.\n\n(데모이므로 실제로 전송되지 않습니다.)')) return;
+  var i=0;
+  (function next(){
+    if(i>=targets.length){$('postMsg').textContent='✓ '+targets.length+'명 등록 완료 (데모).';return;}
+    var ref=ROWREFS[targets[i]];
+    $('postMsg').innerHTML='<span class="spin"></span> 등록 중… '+(i+1)+'/'+targets.length;
+    ref.stat.innerHTML='<span class="spin"></span>';
+    setTimeout(function(){ref.stat.innerHTML='<span class="pill pill-ok">완료</span>';i++;next();},700);
+  })();
+}
+
+/* ===== 문맥 교정 내역 ===== */
+function corrHead(){
+  return '<table class="corr"><colgroup><col style="width:70px"><col style="width:190px"><col style="width:150px"><col style="width:150px"></colgroup>'+
+    '<thead><tr><th>학생</th><th>파일</th><th>원문 단어 (인식한 글)</th><th>교정 (파악한 단어)</th></tr></thead>';
+}
+function rebuildCorrections(){
+  var host=$('corrContent'); if(!host) return;
+  var list=[],total=0,files={};
+  RESULTS.forEach(function(r){
+    if(r.blank||!r.corrections||!r.corrections.length) return;
+    list.push(r); total+=r.corrections.length; files[r.file]=1;
+  });
+  if(!list.length){
+    host.innerHTML=corrHead()+'<tbody><tr><td colspan="4" class="cempty">보고된 교정 사례가 없습니다.</td></tr></tbody></table>';
+    return;
+  }
+  var rows='';
+  list.forEach(function(r){
+    r.corrections.forEach(function(c,i){
+      rows+='<tr>';
+      if(i===0){
+        rows+='<td class="cst" rowspan="'+r.corrections.length+'">'+esc(r.name)+'</td>';
+        rows+='<td class="cfile" rowspan="'+r.corrections.length+'"><a href="#" onclick="alert(\'데모에서는 파일이 열리지 않습니다.\');return false;">'+esc(r.file)+'</a></td>';
+      }
+      rows+='<td class="csrc">'+esc(c.o)+'</td><td class="cfix">'+esc(c.c)+'</td></tr>';
+    });
+  });
+  host.innerHTML=corrHead()+'<tbody>'+rows+'</tbody></table>'+
+    '<div class="ccnt">총 '+total+'건 · 학생 '+list.length+'명 · 파일 '+Object.keys(files).length+'개</div>';
+}
+
+/* ===== 초기 ===== */
+showRubric();
+</script>
+</body>
+</html>
