@@ -1,1 +1,2410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2026 평가계획서 서면 컨설팅 시스템(2학기)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<style>
+:root{
+  --navy:#1a3d6b;--navy-light:#e8f0f8;--navy-mid:#122d50;
+  --ok:#1d6a3a;--ok-light:#e8f5e9;--ok-border:#7bc89a;
+  --req:#a32d2d;--req-light:#fdecea;--req-border:#e57373;
+  --warn:#7d4a00;--warn-light:#fff8e1;--warn-border:#f9a825;
+  --gray:#5f5e5a;--gray-light:#f5f5f5;--border:#ddd;--white:#fff;
+  --gold:#c4922a;--gold-light:#fffde7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:14px;background:#eef1f6;color:#222;line-height:1.5;}
 
+/* 헤더 */
+.app-header{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.app-header h1{font-size:15px;font-weight:700;}
+.app-header .sub{font-size:11px;opacity:.65;margin-top:2px;}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
+
+/* 섹션 */
+.section{background:#fff;border-radius:8px;border:1px solid var(--border);margin-bottom:16px;overflow:hidden;}
+.section-head{background:var(--navy);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.section-head .snum{background:rgba(255,255,255,.2);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.section-body{padding:16px;}
+
+/* AI 설정 */
+.ai-provider-row{display:flex;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.ai-prov-btn{flex:1;padding:9px 6px;border:none;background:#fff;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--gray);cursor:pointer;border-right:1px solid var(--border);transition:all .15s;text-align:center;}
+.ai-prov-btn:last-child{border-right:none;}
+.ai-prov-btn.active{background:var(--navy);color:#fff;}
+.api-key-wrap{position:relative;}
+.api-key-wrap input{width:100%;padding:8px 80px 8px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:monospace;outline:none;}
+.api-key-wrap input:focus{border-color:var(--navy);}
+.api-key-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--gray-light);border:1px solid var(--border);border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--gray);}
+.api-status{display:flex;align-items:center;gap:5px;font-size:11.5px;margin-top:5px;color:var(--gray);}
+.api-dot{width:8px;height:8px;border-radius:50%;background:#ccc;}
+.api-dot.ok{background:var(--ok);}
+.api-dot.err{background:var(--req);}
+.api-panel{display:none;}
+.api-panel.show{display:block;}
+
+/* 기본정보 */
+.form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:12px;color:var(--gray);font-weight:600;}
+.form-group select,.form-group input{border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;}
+.form-group select:focus,.form-group input:focus{border-color:var(--navy);}
+
+/* 수행평가 블록 */
+.perf-block{border:1.5px solid var(--border);border-radius:8px;margin-bottom:14px;overflow:hidden;}
+.perf-block-head{background:var(--navy-light);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.perf-block-head input{flex:1;border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none;}
+.perf-block-head input:focus{border-color:var(--navy);}
+.perf-block-body{padding:14px;}
+
+/* 대영역 헤더 */
+.domain-head{background:#f0f4fa;border:1px solid #c8d8f0;border-radius:6px;padding:12px 14px;margin-bottom:12px;}
+.domain-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.domain-purpose{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.domain-desc{font-size:11.5px;color:#444;line-height:1.7;}
+
+/* 항목 블록 */
+.item-block{border:1px solid var(--border);border-radius:6px;margin-bottom:12px;overflow:hidden;}
+.item-head{background:var(--gray-light);padding:10px 14px;border-bottom:1px solid var(--border);}
+.item-title{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.item-purpose{font-size:12px;color:#333;font-style:italic;margin-bottom:4px;}
+.item-desc{font-size:11.5px;color:#555;line-height:1.7;}
+.item-body{padding:12px 14px;}
+.item-notice{background:var(--warn-light);border:1px solid var(--warn-border);border-radius:4px;padding:8px 12px;font-size:11.5px;color:var(--warn);margin-bottom:10px;line-height:1.6;}
+/* 부적합 예시 */
+.ex-box{background:#fffde7;border:1px solid #ffe082;border-radius:4px;padding:6px 10px;margin-top:5px;font-size:11px;color:#6d4c00;line-height:1.65;display:none;}
+.subtype-item.selected .ex-box{display:block;}
+.ex-label{font-weight:700;margin-right:4px;}
+/* 포트폴리오형 그룹 묶음 */
+.subtype-group-label{font-size:11px;font-weight:800;color:#5a3e8a;background:#f3eeff;border:1px solid #d0b8f8;border-radius:4px;padding:4px 10px;margin:10px 0 6px;display:flex;align-items:center;gap:5px;}
+.subtype-group{border:1.5px solid #d0b8f8;border-radius:6px;padding:8px 8px 4px;background:#faf7ff;margin-bottom:6px;}
+
+/* 판정 라디오 */
+.verdict-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.verdict-radio{display:none;}
+.verdict-label{display:inline-flex;align-items:center;gap:5px;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.verdict-label:hover{border-color:var(--navy);}
+.verdict-radio.ok-r:checked+.verdict-label{background:var(--ok-light);color:var(--ok);border-color:var(--ok-border);}
+.verdict-radio.req-r:checked+.verdict-label{background:var(--req-light);color:var(--req);border-color:var(--req-border);}
+
+/* 부적합 유형 선택 */
+.subtype-area{display:none;background:#fdf8f8;border:1px solid var(--req-border);border-radius:5px;padding:10px 12px;margin-bottom:10px;}
+.subtype-area.show{display:block;}
+.subtype-title{font-size:11px;font-weight:700;color:var(--req);margin-bottom:8px;letter-spacing:.3px;}
+.subtype-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:5px;border:1px solid #f5c6c6;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s;flex-wrap:nowrap;}
+.subtype-item input[type=checkbox]{margin-top:3px;flex-shrink:0;}
+.subtype-item:last-child{margin-bottom:0;}
+.subtype-item:hover{background:var(--req-light);border-color:var(--req);}
+.subtype-item.selected{background:var(--req-light);border-color:var(--req);}
+.subtype-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--req);}
+.subtype-label{font-size:12px;color:#333;line-height:1.5;}
+
+/* 의견 텍스트에어리어 */
+.opinion-area{margin-top:10px;}
+.opinion-label{font-size:11.5px;font-weight:700;color:var(--gray);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.opinion-ta{width:100%;border:1px solid var(--border);border-radius:4px;padding:9px 11px;font-size:12.5px;font-family:inherit;resize:vertical;min-height:120px;outline:none;line-height:1.7;color:#222;}
+.opinion-ta:focus{border-color:var(--navy);}
+.ta-actions{display:flex;gap:6px;margin-top:5px;}
+.ta-btn{padding:3px 10px;font-size:11px;border:1px solid var(--border);background:#fff;color:var(--gray);border-radius:4px;cursor:pointer;font-family:inherit;}
+.ta-btn:hover{background:var(--navy-light);border-color:var(--navy);color:var(--navy);}
+
+/* 기타의견 */
+.cl4-section{border:1.5px solid #c8d8f0;border-radius:6px;margin-bottom:10px;overflow:hidden;}
+.cl4-head{background:#e8f0f8;padding:9px 13px;border-bottom:1px solid #c8d8f0;}
+.cl4-title{font-size:12.5px;font-weight:800;color:var(--navy);margin-bottom:3px;}
+.cl4-check{font-size:11.5px;color:#333;font-style:italic;margin-bottom:3px;}
+.cl4-desc{font-size:11px;color:#555;line-height:1.65;}
+.cl4-body{padding:10px 13px;}
+.cl4-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:5px;border:1px solid #c8d8f0;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s;}
+.cl4-item:hover{background:#e8f0f8;border-color:var(--navy);}
+.cl4-item.selected{background:#e8f0f8;border-color:var(--navy);}
+.cl4-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--navy);}
+.etc-item{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border-radius:5px;border:1px solid var(--border);background:#fff;margin-bottom:7px;cursor:pointer;transition:all .15s;}
+.etc-item:hover{background:var(--gold-light);border-color:var(--gold);}
+.etc-item.selected{background:var(--gold-light);border-color:var(--gold);}
+.etc-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--navy);}
+.etc-label{font-size:12px;color:#333;line-height:1.5;}
+
+/* 업로드 */
+.upload-zone{border:2px dashed var(--border);border-radius:6px;padding:18px 16px;text-align:center;cursor:pointer;transition:all .18s;background:var(--gray-light);position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--navy);background:var(--navy-light);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+/* 이미지 썸네일 그리드 */
+.img-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.img-thumb{position:relative;width:120px;height:90px;border-radius:5px;overflow:hidden;border:1px solid var(--border);background:#f0f2f6;flex-shrink:0;}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-thumb-rm{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(180,30,30,.85);color:#fff;border:none;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;}
+.img-thumb-rm:hover{background:var(--req);}
+
+/* AI 로딩 */
+.ai-loading{display:none;text-align:center;padding:24px;}
+.ai-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* 수행평가 개수 */
+.perf-count-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.cnt-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--navy);background:#fff;color:var(--navy);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;font-weight:700;}
+.cnt-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* 알림 */
+.notice{background:var(--gold-light);border:1px solid var(--gold);border-radius:4px;padding:8px 12px;font-size:12px;color:var(--warn);margin-bottom:12px;line-height:1.6;}
+
+/* 버튼 */
+.btn{padding:9px 20px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700;transition:all .15s;}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:var(--navy-mid);}
+.btn-secondary{background:#fff;color:var(--navy);border:1.5px solid var(--navy);}
+.btn-secondary:hover{background:var(--navy-light);}
+.btn-ok{background:var(--ok);color:#fff;}
+.btn-danger{background:var(--req);color:#fff;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:0;}
+
+/* 토스트 */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:all .28s;z-index:9999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* AI 뱃지 */
+.ai-badge{display:inline-flex;align-items:center;gap:4px;background:#eef4ff;border:1px solid #b0c8f0;border-radius:4px;padding:2px 8px;font-size:10.5px;color:#2a4a8a;font-weight:600;margin-right:6px;}
+
+/* 팝오버 */
+.popover-wrap{position:relative;display:inline-flex;align-items:center;}
+.popover-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#b0c8f0;color:#1a3d6b;font-size:10px;font-weight:800;cursor:pointer;margin-left:3px;flex-shrink:0;border:none;font-family:inherit;line-height:1;}
+.popover-icon:hover{background:var(--navy);color:#fff;}
+.popover-box{display:none;position:absolute;bottom:calc(100% + 6px);left:0;width:260px;background:#fff;border:1.5px solid var(--navy);border-radius:7px;padding:11px 13px;font-size:11.5px;color:#222;line-height:1.7;z-index:500;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+.popover-box.right{left:auto;right:0;}
+.popover-box.show{display:block;}
+.popover-box b{color:var(--navy);}
+.popover-box .po-warn{color:var(--req);font-weight:700;margin-top:6px;display:block;}
+/* 버튼 안내 행 */
+.btn-hint-row{font-size:11px;color:var(--gray);margin-top:5px;display:flex;gap:16px;flex-wrap:wrap;}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .verdict-row{flex-direction:column;}
+}
+@media print{
+  .app-header .btn-group,.ai-provider-row,.upload-zone,.remove-img,.ta-actions,.ai-loading{display:none!important;}
+  body{background:#fff;}
+  .section{box-shadow:none;border:1px solid #ccc;}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>2026 평가계획서 서면 컨설팅 시스템(2학기)</h1>
+    <div class="sub">성취평가제 · 정합성 · 루브릭 적절성 중점 점검</div>
+  </div>
+  <button class="btn btn-danger btn-sm" onclick="resetAll()">🆕 초기화</button>
+</div>
+
+<div class="wrap">
+
+<!-- STEP 0: AI 설정 -->
+<div class="section">
+  <div class="section-head"><div class="snum">0</div>AI 설정 (선택)</div>
+  <div class="section-body">
+    <div class="notice">API 키를 등록하면 업로드된 채점기준표 이미지를 AI가 자동 분석하여 점검의견 초안을 생성합니다. 등록하지 않아도 수동 점검이 가능합니다.</div>
+    <div class="ai-provider-row">
+      <button class="ai-prov-btn" onclick="selectAI('gemini')" id="ai-tab-gemini">🟦 Google Gemini</button>
+      <button class="ai-prov-btn" onclick="selectAI('claude')" id="ai-tab-claude">🟣 Claude</button>
+      <button class="ai-prov-btn active" onclick="selectAI('none')" id="ai-tab-none">🚫 AI 미사용</button>
+    </div>
+    <div class="api-panel" id="ai-panel-gemini">
+      <div style="font-size:12px;color:var(--ok);font-weight:600;margin-bottom:8px;">✅ 무료 티어 제공 · <a href="https://aistudio.google.com" target="_blank" style="color:var(--navy)">aistudio.google.com</a>에서 발급</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label>Gemini API 키</label>
+        <div class="api-key-wrap">
+          <input type="password" id="geminiKey" placeholder="AIza..." autocomplete="off" oninput="onKeyInput('gemini')">
+          <button class="api-key-toggle" onclick="toggleKey('geminiKey',this)">보기</button>
+        </div>
+        <div class="api-status"><div class="api-dot" id="gemini-dot"></div><span id="gemini-status">키를 입력하세요</span></div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label>모델</label>
+        <select id="geminiModel" style="border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:12px;font-family:inherit;outline:none;">
+          <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (빠르고 경제적)</option>
+          <option value="gemini-3.7-flash">gemini-3.7-flash (고성능)</option>
+          <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (최고 성능 · 💰유료)</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="testKey('gemini')">🔍 연결 테스트</button>
+    </div>
+    <div class="api-panel" id="ai-panel-claude">
+      <div style="font-size:12px;color:var(--warn);font-weight:600;margin-bottom:8px;">💡 유료 · <a href="https://console.anthropic.com" target="_blank" style="color:var(--navy)">console.anthropic.com</a>에서 발급</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label>Claude API 키</label>
+        <div class="api-key-wrap">
+          <input type="password" id="claudeKey" placeholder="sk-ant-..." autocomplete="off" oninput="onKeyInput('claude')">
+          <button class="api-key-toggle" onclick="toggleKey('claudeKey',this)">보기</button>
+        </div>
+        <div class="api-status"><div class="api-dot" id="claude-dot"></div><span id="claude-status">키를 입력하세요</span></div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="testKey('claude')">🔍 연결 테스트</button>
+    </div>
+    <div class="api-panel" id="ai-panel-none">
+      <div class="notice" style="margin:0;">AI 미사용 — 모든 항목을 수동으로 체크하고 의견을 직접 작성합니다.</div>
+    </div>
+    <div style="font-size:11.5px;color:var(--gray);margin-top:12px;line-height:1.8;">🔒 API 키는 브라우저 메모리에만 임시 저장되며 외부로 전송·저장되지 않습니다.<br>📋 학생 개인정보가 포함된 이미지는 업로드하지 마세요.</div>
+    <div id="ai-limit-notice" style="display:none;margin-top:14px;background:#fff8e1;border:1.5px solid #f9a825;border-radius:6px;padding:12px 14px;font-size:12px;color:#5a3e00;line-height:1.85;">
+      <div style="font-weight:800;margin-bottom:6px;font-size:12.5px;">🔍 AI 분석 한계 및 활용 안내 — 반드시 확인하세요</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
+        <div>• 이미지 품질·구조에 따라 내용을 잘못 인식할 수 있습니다</div>
+        <div>• 성취기준의 교과별 세부 맥락을 AI가 완전히 이해하지 못할 수 있습니다</div>
+        <div>• 판정(양호/수정)이 실제와 다르거나 <strong>반대로 나올 수 있습니다</strong></div>
+        <div>• 상세 분석은 토큰을 3~4배 더 소비하며, 정확도 향상을 보장하지 않습니다</div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f9a825;font-weight:700;color:#a32d2d;">
+        ⚠️ AI 분석 결과는 참고용입니다. 각 항목을 원본 채점기준표와 반드시 대조하고, 최종 판정과 점검의견은 점검단 교사가 직접 판단하여 작성하시기 바랍니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1: 기본정보 -->
+<div class="section">
+  <div class="section-head"><div class="snum">1</div>기본정보</div>
+  <div class="section-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label>학교급 <span style="color:var(--req)">*</span></label>
+        <select id="schoolLevel" onchange="saveData()">
+          <option value="">선택</option>
+          <option value="중학교">중학교</option>
+          <option value="고등학교">고등학교</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>학교명 <span style="color:var(--req)">*</span></label>
+        <input type="text" id="schoolName" placeholder="예: ○○고등학교" oninput="saveData()">
+      </div>
+      <div class="form-group">
+        <label>과목명 <span style="color:var(--req)">*</span></label>
+        <input type="text" id="subjectName" placeholder="예: 물리학Ⅱ" oninput="saveData()">
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:14px;">
+      <div class="form-group" style="grid-column:1 / -1;">
+        <label>📄 통합 평가계획서 업로드 (자동 인식) <span style="font-size:11px;font-weight:400;color:var(--gray);">— 한 학교의 전체 평가계획서 PDF(전 과목 통합)를 올리면 학교급·학교명·과목·수행평가명을 자동으로 인식합니다</span></label>
+        <div class="upload-zone" id="uz-plan">
+          <input type="file" accept="application/pdf,.pdf" onchange="handlePlanPdf(event)">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);">클릭하거나 PDF를 드래그하세요</div>
+          <div style="font-size:11.5px;color:var(--gray);margin-top:3px;">학교 전체 통합 평가계획서 PDF 1개 (여러 과목 포함, 수백 페이지 가능)</div>
+        </div>
+        <div class="ai-loading" id="planload">
+          <div class="ai-spinner"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--navy);">PDF 분석 중... 페이지 수에 따라 몇 초~수십 초 걸릴 수 있습니다</div>
+        </div>
+        <div id="planResultWrap" style="display:none;margin-top:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <div id="planSummary" style="font-size:12px;color:var(--navy);font-weight:700;"></div>
+            <button class="btn btn-secondary btn-sm" onclick="exportExtractedCSV()">📊 구글시트용 CSV 내보내기</button>
+          </div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:6px;">⚠️ 자동 인식 결과는 참고용입니다. 과목명·수행평가명·개수를 반드시 원본 평가계획서와 대조해 확인하세요. 서식이 특이한 학교는 일부 항목이 누락되거나 잘못 인식될 수 있습니다.</div>
+          <div style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead style="position:sticky;top:0;background:#eef4ff;">
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">과목</th>
+                  <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">학년</th>
+                  <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">수행평가명 (인식된 순서)</th>
+                  <th style="padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);">개수</th>
+                  <th style="padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);"></th>
+                </tr>
+              </thead>
+              <tbody id="planTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: 수행평가별 점검 -->
+<div class="section">
+  <div class="section-head" id="step2Head" style="justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="snum">2</div>수행평가별 점검 항목
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="cnt-btn" id="cntMinus" onclick="changePerfCount(-1)">−</button>
+      <span style="font-size:13px;font-weight:700;min-width:32px;text-align:center;"><span id="cntDisplay">1</span>개</span>
+      <button class="cnt-btn" id="cntPlus" onclick="changePerfCount(+1)">+</button>
+    </div>
+  </div>
+  <div class="section-body" style="padding:14px;">
+    <div id="perfBlocks"></div>
+  </div>
+</div>
+
+<!-- STEP 3: 결과 출력 -->
+<div class="section">
+  <div class="section-head"><div class="snum">3</div>점검 결과 출력</div>
+  <div class="section-body">
+    <div class="btn-group">
+      <button class="btn btn-ok" onclick="downloadDocx()">📄 워드 다운로드 (.docx)</button>
+      <button class="btn btn-primary" onclick="openResultWindow()">🔍 점검결과 보기</button>
+    </div>
+    <div id="nextSubjectWrap" style="display:none;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="goToNextSubject()">➡️ 다음 과목</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════
+// 점검 데이터 정의
+// ═══════════════════════════════════════════
+const DOMAINS = [
+  {
+    key:'A', title:'1. 수행과제의 타당성',
+    purpose:'수행과제가 성취기준의 도달 정도를 측정하도록 타당하게 설계되었는지를 점검합니다.',
+    desc:'성취기준·수행과제·성취수준·채점기준이 하나의 논리적 흐름으로 연결되어 있는지 확인합니다. 각 단계의 평가 요소가 성취기준에서 출발하여 채점기준까지 일관되게 이어지지 않으면, 채점 결과가 성취기준의 도달 정도를 반영하지 못하게 됩니다.',
+    items:[
+      {
+        key:'A1', title:'1-1. 성취기준과 수행과제의 적절성',
+        purpose:'수행과제를 통해 평가하고자 하는 성취기준이 적절하게 제시되었는지를 점검합니다.',
+        desc:'수행평가에서 성취기준은 해당 수행과제로 도달 정도를 측정할 수 있는 근거가 됩니다. 성취기준이 수행과제와 실질적 관련 없이 형식적으로 나열되거나, 수행과제의 평가 요소와 관련성이 낮은 성취기준이 제시된 경우 채점 결과가 성취기준의 도달 정도를 반영하지 못합니다. 또한 모든 학생에게 동일한 성취기준이 적용되어야 합니다.',
+        subtypes:[
+          {key:'A1_s1', label:'성취기준 도달 정도를 측정할 수 없는 수행과제가 제시된 경우',
+           opinion:'제시된 수행과제로는 성취기준의 도달 정도를 실질적으로 측정할 수 없는 구조입니다. 수행과제의 활동·산출물·평가 요소가 성취기준에서 요구하는 지식·이해, 과정·기능과 연결되지 않으면, 학생의 수행 결과가 우수하더라도 해당 성취기준의 도달 여부를 판단할 수 없습니다. 수행과제로 측정 가능한 성취기준으로 교체하거나, 성취기준의 핵심 평가 요소가 수행과제와 채점기준에 실질적으로 반영되도록 재설계하시기 바랍니다.',
+           example:'예 1) [과학] 성취기준: 변인을 통제하여 실험을 설계하고 결과를 분석할 수 있다. / 수행과제: 과학의 날 포스터 만들기 / 평가 요소: 포스터 디자인, 내용 구성 → 변인 통제·실험 설계·결과 분석은 포스터 제작 활동으로 도달 여부를 확인할 수 없으며, 성취기준과 수행과제가 실질적으로 무관한 구조 / 예 2) [사회] 성취기준: 민주주의의 기본 원리를 이해하고 실생활 사례에 적용할 수 있다. / 수행과제: 학급 신문 만들기 / 평가 요소: 편집 디자인, 기사 수, 발표 태도 → 민주주의 원리 이해와 실생활 사례 적용은 신문 제작 활동으로 도달 여부를 확인할 수 없으며, 성취기준과 수행과제가 실질적으로 무관한 구조'},
+          {key:'A1_s2', label:'[포트폴리오·탐구보고서형] 여러 성취기준 중 일부만 실제 채점에 반영되거나, 학생이 주제를 선택하는 구조로 인해 학생마다 적용되는 성취기준이 달라지는 경우',
+           opinion:'성취기준을 여러 개 나열하더라도 실제 채점 항목에 반영되지 않는 성취기준은 평가되지 않은 것입니다. 또한 학생마다 선택한 주제에 따라 다른 성취기준이 적용되면 공정한 비교 평가가 어렵습니다. 모든 학생이 동일한 성취기준 아래 평가받을 수 있도록 수행과제 구조를 검토하시기 바랍니다.',
+           example:'유형 1) 예 1) [국어] 성취기준: 다양한 매체의 정보를 수집하고 내용의 타당성을 비판적으로 평가할 수 있다. / 수행과제: 사회 문제를 주제로 신문 만들기 / 평가 요소: 신문 레이아웃, 기사 수 → 정보 타당성 평가·비판적 읽기는 신문 제작으로 확인되지 않음 / 예 2) [사회] 성취기준: 지역의 지리적 특성과 인문환경의 관계를 분석할 수 있다. / 수행과제: 여행 소개서 만들기 / 평가 요소: 소개서 완성도, 사진 구성 → 지리적 특성과 인문환경의 관계 분석은 소개서 제작으로 확인되지 않음 / 유형 2) 예 1) [역사] 수행과제: 관심 있는 역사적 사건을 자유 선택하여 탐구 보고서 작성 / 학생 A는 임진왜란, 학생 B는 산업혁명 선택 → 주제마다 성취기준이 달라져 동일 기준으로 도달 정도 비교 불가 / 결국 보고서 분량·형식만 공통 채점 기준으로 남음 / 예 2) [국어] 수행과제: 읽고 싶은 책을 자유 선택하여 독서 포트폴리오 작성 / 학생마다 다른 성취기준 연결 → 비판적 읽기·논거 구성 등 핵심 능력 채점 불가, 포트폴리오 완성도·분량만 채점 가능'},
+          {key:'A1_s4', label:'성취기준을 과다하게 통합하여 수행과제가 특정 성취기준의 평가 요소와 무관한 경우',
+           opinion:'여러 성취기준을 하나의 수행과제로 통합하는 경우, 통합된 성취기준의 평가 요소는 많은 반면 수행과제로 확인할 수 있는 내용은 제한적이어서 특정 성취기준의 핵심 평가 요소가 수행과제와 실질적으로 무관해지는 문제가 발생합니다. 채점기준의 평가 요소가 각 성취기준의 핵심 내용을 실제로 측정하는지 확인하고, 수행과제와 무관한 성취기준이 있는지 점검하시기 바랍니다.',
+           example:'예 1) [과학] 성취기준 5개([12반응01-01]~[12반응01-05])를 중화 적정 실험 보고서 1개로 통합 / 채점 요소가 01-03(pH 변화 해석)에 집중되어 있어 01-05(완충 작용 설명)는 수행과제와 실질적으로 무관한 구조 → 수행과제로 측정할 수 없는 성취기준은 해당 수행평가의 성취기준에서 제외하고, 실제로 측정 가능한 성취기준만 제시하시기 바랍니다. / 예 2) [영어] 읽기·쓰기·문화 이해 등 5개 성취기준을 영어 여행 소개서 1개로 통합 / 소개서 작성은 쓰기와 관련되고, 문화 이해·중심 내용 파악(읽기) 성취기준은 수행과제와 무관한 구조 → 실질적으로 측정되지 않는 성취기준은 수행평가의 성취기준에서 제외하시기 바랍니다.'}
+        ]
+      },
+      {
+        key:'A2', title:'1-2. 성취수준 평가 요소와 성취기준의 정합성',
+        purpose:'성취기준의 평가 요소와 성취수준의 기술 내용을 대조하여 내용과 수행 수준이 정합적으로 연결되어 있는지 점검합니다.',
+        desc:'성취수준은 성취기준에서 요구하는 지식·이해, 과정·기능, 가치·태도의 도달 정도를 수준별로 구체화한 것입니다. 따라서 성취기준의 평가 요소가 성취수준에 충실히 반영되어 있는지를 우선 확인해야 합니다. 특히 성취기준에서 요구하는 지식·이해의 범위와 깊이, 핵심 수행 동사(이해, 추론, 설명, 적용, 조사 등)가 성취수준별로 어떠한 질적 차이를 보이며 단계적으로 구분되는지를 중심으로 점검합니다.',
+        notice:'',
+        subtypes:[
+          {key:'A2_s3', label:'성취수준의 단계 수가 교과 유형에 맞지 않는 경우',
+           opinion:'성취수준의 단계 구분이 교과 유형에 맞지 않습니다. 예체능 및 교양 교과를 제외한 보통교과는 A·B·C·D·E 5단계, 예체능·교양 교과는 A·B·C 3단계로 구분하여 모든 수준에 학생의 수행 특성을 기술하시기 바랍니다.',
+           example:'예) [물리학] 예체능 및 교양 교과를 제외한 보통교과임에도 성취수준을 A·B·C 3단계로만 구분하여 기술한 경우 → 보통교과는 A·B·C·D·E 5단계 형식으로 재작성 필요'},
+          {key:'A2_s1', label:'성취수준 기술이 성취기준의 평가 요소(지식·이해, 과정·기능)의 수행과 연결되지 않는 경우',
+           opinion:'성취수준의 평가 요소가 성취기준에서 요구하는 지식·이해, 과정·기능의 핵심 평가 요소를 반영하지 않고 있습니다. 성취수준은 성취기준의 핵심 평가 요소에 대한 도달 정도를 수준별로 기술해야 하며, 성취기준과 무관한 요소로 대체되거나 성취기준의 도달 정도를 나타내지 못하는 경우 수정이 필요합니다. 성취기준이 여러 개인 경우에도 각 성취기준의 핵심 평가 요소가 성취수준에 반영될 수 있도록 재작성하시기 바랍니다.',
+           example:'예 1) [국어] 성취기준: 논거를 들어 주장을 구성하고 설득력 있게 표현할 수 있다. / 성취수준 A: 글쓰기를 매우 잘하며 표현이 풍부하다. → 논거 타당성·주장 구성 논리성(성취기준 핵심)이 성취수준에 반영되지 않고 글쓰기 일반 수준으로 대체됨 / 예 2) [국어] 성취기준: 논거를 들어 주장을 구성하고 설득력 있게 표현할 수 있다. / 성취수준 A: 맞춤법과 문장 표현이 정확하고 분량이 충분하다. → 성취기준의 평가 요소는 논거 타당성·주장 구성 능력인데, 성취수준은 맞춤법·문장 형식·분량이라는 전혀 다른 요소로 기술되어 있음 / 예 3) [수학] 성취기준: 이차함수의 그래프를 이해하고 실생활 문제에 적용할 수 있다. / 성취수준 A: 수학을 매우 잘 한다. / B: 수학을 잘 한다. → 그래프 이해·실생활 적용이라는 성취기준의 핵심 평가 요소가 성취수준에 전혀 반영되지 않고 교과 전반에 대한 막연한 평가로 대체됨'}
+        ]
+      },
+      {
+        key:'A3', title:'1-3. 성취수준과 채점기준의 연결성',
+        purpose:'성취수준의 평가 요소가 채점기준에 실제로 반영되어 있는지를 점검합니다.',
+        desc:'성취기준과 성취수준이 정합적이더라도 채점기준의 평가 요소가 성취수준과 단절되는 경우가 있습니다. 성취수준에서 제시한 평가 요소가 채점기준에 그대로 반영되지 않으면 채점 결과가 성취수준의 도달 정도를 측정하지 못하게 됩니다. 성취기준의 평가 요소와 채점기준의 평가 요소가 반드시 1:1로 대응될 필요는 없으나, 채점기준의 평가 요소가 성취수준에서 제시한 핵심 평가 요소와 실질적으로 연결되어 있어야 합니다. 수행 방식(실험·발표·글쓰기 등)에서 비롯된 평가 요소는 포함될 수 있으나, 채점기준표에서 해당 요소의 배점 비중이 성취기준의 핵심 평가 요소의 비중을 넘지 않아야 합니다.',
+        subtypes:[
+          {key:'A3_s1', label:'성취기준·성취수준의 핵심 평가 요소가 채점기준의 채점 항목과 일치하지 않는 경우',
+           opinion:'성취기준과 성취수준에서 제시한 핵심 평가 요소가 채점기준의 채점 항목에 반영되어 있지 않습니다. 채점기준은 성취기준의 핵심 평가 요소를 성취수준에서 어떻게 기술하였는지를 기반으로 구성되어야 하며, 채점기준의 평가 항목이 성취기준·성취수준의 평가 요소와 일치하지 않는 경우 채점 결과가 성취기준의 도달 정도를 반영하지 못하게 됩니다. 성취기준·성취수준의 핵심 평가 요소와 채점기준의 평가 항목이 실질적으로 일치하도록 채점기준을 재구성하시기 바랍니다.',
+           example:'예 1) [과학] 성취수준 A: 변인을 스스로 설정·통제하여 실험 결과를 논리적으로 해석함 / 채점기준: 보고서 분량(20점), 실험 참여 태도(20점), 결론 서술 여부(10점) → 성취수준의 핵심 평가 요소인 변인 통제와 결과 해석 논리성이 채점 항목에 반영되지 않고, 분량·태도 등 성취기준과 무관한 요소로 대체됨 / 예 2) [사회] 성취수준 A: 지역의 지리적 특성과 인문환경의 관계를 분석하고 근거를 들어 설명함 / 채점기준: 지도 색칠 완성도(15점), 범례 작성 여부(10점), 지도 꾸미기(10점) → 분석·설명 능력(성취수준 핵심)은 채점 항목에 없고 지도 제작 기능만 채점됨'},
+          {key:'A3_s2', label:'보고서 분량, 시각 자료 수, 발표 형식 등 성취기준·성취수준의 핵심 평가 요소와 무관한 요소가 주요 채점 항목으로 포함된 경우',
+           opinion:'채점기준에 보고서 분량, 시각 자료 수, 발표 형식 등 성취기준·성취수준의 핵심 평가 요소와 직접적인 관련이 낮은 요소가 주요 채점 항목으로 포함되어 있습니다. 수행 방식에서 비롯된 요소가 일부 포함되는 것은 가능하나, 채점기준표에서 이러한 요소의 배점 비중이 성취기준의 핵심 평가 요소보다 높거나 이를 대체하는 수준이 되어서는 안 됩니다. 핵심 평가 요소 중심으로 채점기준을 재구성하시기 바랍니다.',
+           example:'예 1) [국어] 성취기준: 논거를 들어 설득력 있는 글을 쓸 수 있다. / 채점기준: 글자 수 800자 이상(20점), 단락 구분(10점), 맞춤법 오류 수(10점) → 논거 타당성·설득력(성취기준 핵심)은 없고, 분량·형식만 채점 / 예 2) [사회] 성취기준: 지역의 지리적 특성을 분석할 수 있다. / 채점기준: 지도 색칠 완성도(15점), 범례 작성 여부(10점), 지도 꾸미기(10점) → 지리적 특성 분석(성취기준 핵심)은 없고, 지도 제작 기능만 채점 / 예 3) [영어] 채점기준에 "발표 목소리 크기(10점)"가 포함된 경우 → 성취기준·교과 과정기능 어디에도 근거 없는 요소'}
+        ]
+      }
+    ]
+  },
+  {
+    key:'B', title:'2. 채점기준표의 신뢰성',
+    purpose:'채점기준표가 학생의 수행 수준을 신뢰롭게 판단할 수 있도록 구성되었는지를 점검합니다.',
+    desc:'정합성이 확보된 채점기준표라 하더라도, 수준 구분이 모호하거나 채점 방식이 부적절하거나 채점자에 따라 결과가 달라진다면 평가의 신뢰성을 보장할 수 없습니다. 채점기준표 자체의 질적 완성도를 확인합니다.',
+    items:[
+      {
+        key:'B1', title:'2-1. 채점기준표의 채점 가능성',
+        purpose:'채점기준이 교사가 학생의 수행 수준을 구분하고 직접 관찰·확인하여 채점할 수 있는 수준으로 기술되어 있는지를 점검합니다.',
+        desc:'채점기준의 각 수준은 학생이 실제로 무엇을 어떻게 수행하는지의 차이가 드러나야 합니다. 수준 간 차이가 매우 잘함·잘함·보통처럼 정도 표현으로만 구분되거나, 적극적으로 참여함·적절히 해석함처럼 관찰·판단 기준이 구체화되지 않은 표현으로 기술되면 채점자마다 판단이 달라지고 채점 일관성을 확보하기 어렵습니다.',
+        subtypes:[
+          {key:'B1_s1', label:'채점기준의 수준 간 수행 특성이 구체적으로 기술되지 않아 채점자가 수준을 구분하기 어려운 경우',
+           opinion:'채점기준의 수준 간 차이가 정도 표현(매우 잘함·잘함·보통·미흡)으로만 구분되어 있거나, 적극적으로 참여함·적절히·충분히처럼 판단 기준이 구체화되지 않은 표현으로 기술되면 채점자마다 판단이 달라지고 채점 일관성을 확보하기 어렵습니다. 각 수준에서 학생이 무엇을 어느 범위까지, 어떤 깊이로 수행하는지가 관찰 가능한 행동 수준으로 구체적으로 기술되어야 합니다.',
+           example:'예 1) [영어] 상: 주요 정보를 매우 잘 파악하고 의견을 잘 쓴다 / 중: 잘 파악하고 의견을 쓴다 → 매우 잘과 잘의 차이가 드러나지 않아 수준 구별 불가. 개선 방향: 상은 비명시적 정보까지 추론하고 근거를 들어 의견을 구성, 중은 명시적 정보를 파악하고 단순 의견을 서술하는 수준으로 구분 / 예 2) [사회] 채점기준: 민주시민 의식이 높고 토의에 적극적으로 참여함 → 적극적은 관찰·확인 불가. 개선 방향: 토의에서 찬반 근거를 1회 이상 제시하고 상대 의견에 반론을 논거와 함께 제시함으로 구체화 / 예 3) [수학] 풀이 과정을 충분히 서술하고 적절한 수식을 사용함 → 충분히와 적절한의 기준이 없어 채점자마다 다른 판단. 개선 방향: 풀이 단계별로 수식과 근거를 명시하고 오류 없이 완성한 경우 A수준으로 구체화'},
+          {key:'B1_s2', label:'성취수준의 표현을 그대로 채점기준에 옮겨 사용하여 수준별 수행 특성이 드러나지 않는 경우',
+           opinion:'채점기준이 성취수준의 표현을 그대로 옮긴 것으로 보입니다. 성취수준은 도달 정도를 요약한 진술이므로 추상적 표현이 포함될 수 있으나, 채점기준은 교사가 학생의 수행을 보고 즉시 판단할 수 있는 수준으로 구체화되어야 합니다. 성취수준의 핵심 평가 요소를 바탕으로 각 수준에서 학생이 실제로 어떤 수행을 보이는지 관찰 가능한 행동 특성으로 재기술하시기 바랍니다.',
+           example:'예 1) [국어] 성취수준 A: 논거를 들어 주장을 설득력 있게 표현할 수 있다 / 채점기준 A: 논거를 들어 주장을 설득력 있게 표현함 → 성취수준 표현을 그대로 옮겨 채점 기준으로서 역할 불가. 개선 방향: A수준은 복수의 타당한 근거를 논리적으로 연결하고 반론을 고려하여 주장을 구성함으로 재기술 / 예 2) [과학] 성취수준 B: 실험 결과를 대체로 정확히 해석함 / 채점기준 B: 실험 결과를 대체로 정확히 해석함 → 성취수준과 채점기준이 동일하여 교사가 채점 시 판단 기준으로 활용 불가. 개선 방향: B수준은 결과에서 주요 경향성을 확인하고 가설과 비교하여 설명하나 일부 오류가 있는 경우로 재기술'}
+        ]
+      },
+      {
+        key:'B2', title:'2-2. 채점 방식의 적합성',
+        purpose:'각 평가 요소의 성격에 맞는 채점 방식(질적/양적, 분석적/총체적)이 선택되었는지를 점검합니다.',
+        desc:'채점 방식을 판단할 때는 두 가지를 먼저 확인합니다. 첫째, 이 평가 요소는 질적 판단이 필요한가, 아니면 양적 확인으로 충분한가. 둘째, 평가 요소가 복수인 경우 요소별로 독립적 채점(분석적)이 필요한가, 전체 인상으로 판단(총체적)해도 되는가. 논증의 타당성·추론의 깊이처럼 질적 판단이 필요한 요소를 개수·오류 수 같은 양적 기준으로 대체하면 학생의 실제 사고 수준을 변별할 수 없습니다.',
+        subtypes:[
+          {key:'B2_s1', label:'논증·추론·해석처럼 질적 판단이 필요한 항목을 근거 개수·오류 수 등 수치로만 채점하는 경우',
+           opinion:'논증의 타당성, 추론의 깊이, 결과 해석의 논리성처럼 질적 판단이 필요한 평가 요소가 근거의 개수, 오류 수, 분량 등 양적 기준으로만 채점되고 있습니다. 양적 기준은 수행의 외형적 특성만 측정하므로 학생의 실제 사고 수준을 변별하기 어렵습니다. 수행의 질적 차이가 드러날 수 있도록 채점기준을 수정하시기 바랍니다.',
+           example:'예 1) [수학] 평가 요소: 수학적 추론의 논리성 / 채점기준: 풀이 단계를 5단계 이상 쓰면 A, 3~4단계 B, 2단계 이하 C → 풀이 단계 수가 많아도 논리적 오류가 있을 수 있고, 2단계로 간결하게 정확히 추론한 학생이 낮은 점수를 받는 문제 발생 '},
+          {key:'B2_s2', label:'평가 요소를 O/X로 판단하고 충족 개수(5개 만족, 4개 만족 등)로 수준을 결정하는 경우',
+           opinion:'분석적 채점기준 형식을 갖추고 있으나, 각 평가 요소를 포함 여부(O/X)로만 판단하고 충족한 요소의 개수로 수준을 결정하는 방식은 두 가지 문제가 있습니다. 첫째, 평가 요소 간 중요도가 동등하지 않음에도 개수로만 합산하면 핵심 요소의 미충족과 부수적 요소의 미충족이 같은 비중으로 처리됩니다. 둘째, 각 평가 요소는 O/X로 판단할 수 없는 질적 수행 수준의 차이를 내포하고 있어 충족 여부만으로는 도달 정도를 변별하기 어렵습니다. 각 평가 요소마다 수행 수준의 질적 차이가 단계적으로 드러나는 분석적 채점기준으로 재구성하시기 바랍니다.',
+           example:'예 1) [국어] 평가 요소: 주제의 명확성, 논거의 타당성, 문장의 완성도, 근거 자료 활용, 결론의 일관성 (5개 요소) / 채점기준: 5개 충족 시 A, 4개 충족 시 B, 3개 충족 시 C → 핵심인 논거 타당성이 미흡하더라도 나머지 4개를 충족하면 B를 받고, 논거는 우수하나 형식 요소가 빠지면 같은 B를 받아 성취기준 도달 정도를 실질적으로 변별하지 못함 / 예 2) [과학] 평가 요소: 가설 설정, 변인 통제, 데이터 기록, 결과 해석, 결론 도출 (5개 요소) / 채점기준: 항목별 O/X 체크 후 3개 이상 충족 시 A, 2개 충족 시 B → 변인 통제(핵심)가 없어도 나머지 항목으로 A를 받을 수 있어 성취기준 도달 여부를 실질적으로 변별하지 못함'}
+        ]
+      }
+    ]
+  }
+];
+
+
+// ═══════════════════════════════════════════
+// subtype 렌더 (A1은 그룹 구분)
+// ═══════════════════════════════════════════
+function renderSubtypes(i, item){
+  if(item.key !== 'A1'){
+    return item.subtypes.map(st=>`
+      <label class="subtype-item" id="si-${i}-${st.key}" for="cb-${i}-${st.key}">
+        <input type="checkbox" id="cb-${i}-${st.key}" onchange="toggleSubtype(${i},'${item.key}','${st.key}')">
+        <div style="flex:1;">
+          <span class="subtype-label">${st.label}</span>
+          ${st.example?`<div class="ex-box"><span class="ex-label">📌 부적합 예시</span>${st.example}</div>`:''}
+        </div>
+      </label>`).join('');
+  }
+  // A1: 유형1(독립) + 유형2그룹(s2~s4)으로 시각 구분
+  const s1 = item.subtypes.find(s=>s.key==='A1_s1');
+  const grp = item.subtypes.filter(s=>s.key!=='A1_s1');
+  let html='';
+  if(s1){
+    html+=`<label class="subtype-item" id="si-${i}-${s1.key}" for="cb-${i}-${s1.key}">
+      <input type="checkbox" id="cb-${i}-${s1.key}" onchange="toggleSubtype(${i},'${item.key}','${s1.key}')">
+      <div style="flex:1;">
+        <span class="subtype-label">${s1.label}</span>
+        ${s1.example?`<div class="ex-box"><span class="ex-label">📌 부적합 예시</span>${s1.example}</div>`:''}
+      </div>
+    </label>`;
+  }
+  if(grp.length>0){
+    html+=`<div class="subtype-group-label">📂 포트폴리오·탐구보고서·신문만들기·여행소개서·지도만들기·독서탐구 등에서 흔히 나타나는 유형 (해당하는 것 선택)</div>
+    <div class="subtype-group">`;
+    grp.forEach(st=>{
+      const cleanLabel = st.label.replace('[포트폴리오·탐구보고서형] ','');
+      const exHtml = st.example ? '<div class="ex-box"><span class="ex-label">📌 부적합 예시</span>'+st.example+'</div>' : '';
+      html += '<label class="subtype-item" id="si-'+i+'-'+st.key+'" for="cb-'+i+'-'+st.key+'" style="margin-bottom:6px;">'
+           +  '<input type="checkbox" id="cb-'+i+'-'+st.key+'" data-perf="'+i+'" data-item="A1" data-st="'+st.key+'" onchange="onGrpCheck(this)">'
+           +  '<div style="flex:1;"><span class="subtype-label">'+cleanLabel+'</span>'+exHtml+'</div>'
+           +  '</label>';
+    });
+    html+=`</div>`;
+  }
+  return html;
+}
+
+
+// ═══════════════════════════════════════════
+// 항목 2: 암기형·과제형·AI 대리 수행
+// ═══════════════════════════════════════════
+const CL4_ITEMS = [
+  {
+    key:'CL4_g1', title:'3-1. 암기형 — 정해진 답을 재현하는 구조',
+    desc:'수업 중 실시하는 서·논술형 수행평가는 실험·조사·분석 등을 바탕으로 해결 방안 도출, 가치 판단 등 근거를 기반으로 자신의 생각을 타당하게 서술하는 방식이 적합합니다. 정해진 정답을 재현하는 방식은 정기고사에 적합한 형태이며, 수행평가로 운영할 경우 학생의 사고 과정과 수행 역량을 평가하지 못하고 수업 중 반별 순차 실시 시 공정성 문제가 발생합니다.',
+    check:'수행평가가 교과서 개념·공식·용어를 그대로 재현하거나 정해진 답을 서술하는 암기형으로 운영될 가능성이 높다',
+    subtypes:[
+      {key:'CL4_s1', label:'채점기준표를 공개하고 정답 재현형으로 운영하는 경우',
+       opinion:'채점기준표가 공개되어 있으나 특정 개념·용어의 포함 여부나 개수로 수준을 결정하는 구조는 학생의 사고 과정보다 암기 능력을 평가하게 됩니다. 수업 중 반별로 순차 실시할 경우 먼저 평가받은 학급의 정답이 유출되어 공정성 문제가 발생할 수 있습니다. 근거를 바탕으로 자신의 생각을 서술하는 방식으로 수행과제와 채점기준을 재구성하시기 바랍니다.',
+       example:'예 1) [과학] 수행과제: 광합성 과정을 단계별로 서술하시오 / 채점기준: 핵심 용어 5개 이상 포함 시 A → 교과서 내용 재현 구조로 사고 과정 평가 불가. 반별 순차 실시 시 정답 유출로 공정성 문제 발생 / 예 2) [사회] 수행과제: 민주주의의 기본 원리 3가지를 서술하시오 / 채점기준: 교과서에 제시된 3가지 원리 포함 시 A → 정해진 모범 답안과의 일치 여부로만 채점하는 구조로 수행평가보다 지필평가에 적합한 형태'},
+      {key:'CL4_s2', label:'채점기준표를 미공개하면서 평가 범위·문항을 사전 안내하여 정답을 암시하는 경우',
+       opinion:'채점기준표를 공개하지 않으면서 평가 범위나 문항을 사전에 안내하는 방식은 채점기준 안에 정답이 암시되어 있는 것과 같습니다. 이는 수행평가로서 서·논술형 평가의 취지에 맞지 않으며, 사전 암기를 유도하고 반별 정답 유출로 인한 공정성 문제가 발생할 수 있습니다. 채점기준표를 사전에 공개하거나, 정해진 정답이 없는 방식으로 수행과제를 재설계하시기 바랍니다.',
+       example:'예 1) 다음 주 수행평가에서 3단원 내용을 서술할 예정이라고 미리 고지하는 경우 / 예 2) 학급마다 다른 시간에 동일 문항으로 평가하여 앞 학급의 답안이 뒤 학급에 유출될 가능성이 있는 경우'}
+    ]
+  },
+  {
+    key:'CL4_g2', title:'3-2. 과제형 — 수업 중 완성 가능성',
+    desc:'수행평가는 수업 중 교사가 학생의 수행 과정을 직접 관찰하는 것이 원칙입니다. 수업 시간 내 완성하기 어려운 분량이나 내용이 포함된 경우 과제형으로 운영될 소지가 있습니다. 여러 차시에 걸쳐 평가가 진행될 경우에는 평가지를 차시마다 회수한 후 다음 차시에 재배부하는 방식으로 운영하여야 합니다.',
+    check:'수행평가가 수업 시간 내 완성하기 어려운 분량이나 내용으로 설계되어 과제형으로 운영될 소지가 있다',
+    subtypes:[
+      {key:'CL4_s3', label:'수업 시간 내 완성하기 어려운 분량·내용으로 과제형 운영 소지가 있는 경우',
+       opinion:'수업 시간 내 완성하기 어려운 분량이나 내용이 포함되어 있어 과제형으로 운영될 소지가 있습니다. 수업 중 완성 가능한 범위로 수행과제를 조정하시기 바랍니다. 불가피하게 여러 차시에 걸쳐 진행되는 경우에는 차시마다 평가지를 회수하고 다음 차시에 재배부하는 방식으로 운영하여 수업 외 작성을 방지하시기 바랍니다.',
+       example:'예 1) 1차시(50분) 안에 완성하기 어려운 5쪽 이상의 보고서 작성을 요구하는 경우 → 수업 후 가정에서 완성하는 과제형으로 운영될 소지가 있음 / 예 2) 현장 조사·인터뷰 등 수업 외 활동이 필수인 과제 → 수업 중 교사 관찰이 불가능한 구조'}
+    ]
+  },
+  {
+    key:'CL4_g3', title:'3-3. AI 대리 수행 — 생성형 AI 활용 조건',
+    desc:'조사·분석·글쓰기 등의 과제는 생성형 AI가 대신 수행할 수 있습니다. AI 활용 가능 범위를 구체적으로 명시하거나, AI로 대체할 수 없는 수행 요소를 포함해야 합니다.',
+    check:'생성형 AI를 활용한 대리 수행 가능성을 배제하거나 활용 조건·제한·유의사항이 명시되어 있다',
+    subtypes:[
+      {key:'CL4_s4', label:'생성형 AI가 수행 전 과정을 대신할 수 있는 구조이면서 활용 조건이 명시되지 않은 경우',
+       opinion:'수행과제의 구조상 생성형 AI가 학생 대신 수행 전 과정을 대체할 수 있어 학생의 실제 수행 역량을 평가하기 어렵습니다. AI 활용 허용 범위와 제한 조건을 평가계획서에 명시하거나, AI로 대체할 수 없는 수행 요소(수업 중 직접 관찰, 구두 설명, 과정 기록 등)를 포함하는 방향으로 수행과제를 보완하시기 바랍니다.',
+       example:'예 1) 공란에 대해 조사하여 보고서를 작성하시오처럼 AI가 전 과정을 대신할 수 있는 구조이면서 AI 활용 조건이 전혀 명시되지 않은 경우 / 예 2) 특정 주제에 대한 의견을 논술하시오처럼 AI가 논술 전체를 생성할 수 있으나 수업 중 실시 여부나 AI 제한 조건이 불명확한 경우'}
+    ]
+  }
+];
+// ═══════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════
+let S = {
+  aiProvider:'none',
+  perfCount:1,
+  performances:[]
+};
+
+function initPerf(){
+  const p = { name:'', imgs:[], aiResult:null };
+  DOMAINS.forEach(d => d.items.forEach(item => {
+    p[item.key] = { verdict:'', subtypes:[], opinion:'', aiComment:'' };
+  }));
+  p['CL4'] = { opinion:'' };
+  p['OVERALL'] = { opinion:'' };
+  CL4_ITEMS.forEach(grp => grp.subtypes.forEach(st => {
+    p[st.key] = { checked:false, opinion:'' };
+  }));
+  return p;
+}
+
+// ═══════════════════════════════════════════
+// AI 설정
+// ═══════════════════════════════════════════
+function selectAI(p){
+  S.aiProvider=p;
+  ['gemini','claude','none'].forEach(id=>{
+    document.getElementById('ai-tab-'+id).classList.toggle('active',id===p);
+    document.getElementById('ai-panel-'+id).classList.toggle('show',id===p);
+  });
+  // AI 한계 안내: 미사용이면 숨김, Gemini·Claude면 표시
+  const noticeEl=document.getElementById('ai-limit-notice');
+  if(noticeEl) noticeEl.style.display=p==='none'?'none':'block';
+  // 수행평가 블록 이미 렌더된 경우 업로드 영역 즉시 토글
+  for(let i=0;i<S.perfCount;i++){
+    const uw=document.getElementById('upload-wrap-'+i);
+    if(uw) uw.style.display = p==='none' ? 'none' : 'block';
+  }
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  if(!el) return;
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+function toggleKey(id,btn){
+  const el=document.getElementById(id);
+  el.type=el.type==='password'?'text':'password';
+  btn.textContent=el.type==='password'?'보기':'숨기기';
+}
+function onKeyInput(p){
+  const k=document.getElementById(p==='gemini'?'geminiKey':'claudeKey').value.trim();
+  const dot=document.getElementById(p+'-dot');
+  const st=document.getElementById(p+'-status');
+  if(k.length>8){dot.className='api-dot ok';st.textContent='키 입력됨';}
+  else{dot.className='api-dot';st.textContent='키를 입력하세요';}
+}
+async function testKey(p){
+  toast('연결 테스트 중...');
+  try{
+    if(p==='gemini'){
+      const k=document.getElementById('geminiKey').value.trim();
+      const m=document.getElementById('geminiModel').value;
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`,
+        {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'test'}]}]})});
+      const d=await r.json();
+      if(d.candidates){document.getElementById('gemini-dot').className='api-dot ok';document.getElementById('gemini-status').textContent='✅ 연결 성공';toast('Gemini 연결 성공!');}
+      else throw new Error(d.error?.message||'오류');
+    } else {
+      const k=document.getElementById('claudeKey').value.trim();
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]})});
+      const d=await r.json();
+      if(d.content){document.getElementById('claude-dot').className='api-dot ok';document.getElementById('claude-status').textContent='✅ 연결 성공';toast('Claude 연결 성공!');}
+      else throw new Error(d.error?.message||'오류');
+    }
+  }catch(e){toast('연결 실패: '+e.message);}
+}
+
+// ═══════════════════════════════════════════
+// 수행평가 개수
+// ═══════════════════════════════════════════
+function changePerfCount(d){
+  const n=Math.max(1,Math.min(12,S.perfCount+d));
+  if(n===S.perfCount)return;
+  // 현재 입력값 수집 후 state에 반영
+  for(let k=0;k<S.perfCount;k++){
+    if(!S.performances[k])continue;
+    const nm=document.getElementById('pname-'+k);
+    if(nm)S.performances[k].name=nm.value;
+    DOMAINS.forEach(dom=>dom.items.forEach(item=>{
+      const ta=document.getElementById('ta-'+k+'-'+item.key);
+      if(ta && S.performances[k][item.key])
+        S.performances[k][item.key].opinion=ta.value;
+    }));
+    const etaTa=document.getElementById('ta-'+k+'-ETC');
+    if(etaTa && S.performances[k]['ETC'])
+      S.performances[k]['ETC'].opinion=etaTa.value;
+  }
+  S.perfCount=n;
+  while(S.performances.length<n)S.performances.push(initPerf());
+  document.getElementById('cntDisplay').textContent=n;
+  document.getElementById('cntMinus').disabled=n<=1;
+  document.getElementById('cntPlus').disabled=n>=12;
+  renderPerfs();
+}
+
+// ═══════════════════════════════════════════
+// 렌더링
+// ═══════════════════════════════════════════
+function renderPerfs(){
+  const wrap=document.getElementById('perfBlocks');
+  wrap.innerHTML='';
+  for(let i=0;i<S.perfCount;i++) wrap.appendChild(buildPerfBlock(i));
+  restoreValues();
+}
+
+function buildPerfBlock(i){
+  const div=document.createElement('div');
+  div.className='perf-block';
+  div.id=`pb-${i}`;
+
+  const useAI=S.aiProvider!=='none';
+  let html='';
+
+  // 수행평가명
+  html+=`<div class="perf-block-head">
+    <span style="font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap;">수행평가 ${i+1}</span>
+    <input type="text" id="pname-${i}" placeholder="수행평가명 입력 (예: 탐구 보고서 작성)" oninput="saveData()">
+  </div>
+  <div class="perf-block-body">`;
+
+  // AI 이미지 업로드 (AI 미사용 시 숨김)
+  const uploadDisplay = S.aiProvider==='none' ? 'none' : 'block';
+  html+=`<div id="upload-wrap-${i}" style="border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:14px;background:#fafcff;display:${uploadDisplay}">
+      <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:8px;">📸 채점기준표 이미지 업로드 · AI 분석 <span style="font-size:11px;font-weight:400;color:var(--gray);">(최대 5장)</span></div>
+      <div class="upload-zone" id="uz-${i}">
+        <input type="file" accept="image/*" multiple onchange="handleImg(event,${i})">
+        <div style="font-size:13px;font-weight:700;color:var(--navy);">클릭하거나 이미지를 드래그하세요</div>
+        <div style="font-size:11.5px;color:var(--gray);margin-top:3px;">JPG · PNG · 최대 10MB · 한 번에 여러 장 선택 가능</div>
+        <div style="font-size:11px;color:var(--navy);margin-top:5px;opacity:.7;">📋 캡처 후 <kbd style="background:#e8edf5;border:1px solid #b0c0d8;border-radius:3px;padding:1px 5px;font-family:inherit;font-size:10.5px;">Ctrl+V</kbd> 붙여넣기도 가능합니다</div>
+      </div>
+      <div class="img-grid" id="igrid-${i}"></div>
+      <div style="display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap;">
+        <div class="popover-wrap">
+          <button class="btn btn-primary btn-sm" id="ai-run-btn-${i}" style="display:none;" onclick="runAI(${i})">🤖 AI 분석 시작</button>
+          <button class="popover-icon" id="po-run-btn-${i}" style="display:none;" onclick="togglePopover('po-run-box-${i}')">i</button>
+          <div class="popover-box" id="po-run-box-${i}">
+            <b>🤖 AI 분석 시작</b><br>
+            채점기준표 이미지를 분석하여<br>
+            • 5개 항목 판정 자동 선택<br>
+            • 점검의견 textarea 자동 입력<br>
+            • 종합의견 자동 작성<br>
+            <span style="color:var(--ok);font-weight:600;">⏱ 약 10~20초 · 토큰 소비 적음</span>
+          </div>
+        </div>
+        <div class="popover-wrap">
+          <button class="btn btn-secondary btn-sm" id="ai-detail-btn-${i}" style="display:none;" onclick="runAIDetail(${i})">📊 상세 분석</button>
+          <button class="popover-icon" id="po-det-btn-${i}" style="display:none;" onclick="togglePopover('po-det-box-${i}')">i</button>
+          <div class="popover-box" id="po-det-box-${i}">
+            <b>📊 상세 분석</b><br>
+            성취기준·성취수준·채점기준의 평가 요소를 직접 대조하는 심층 보고서를 새 창으로 표시합니다.<br>
+            • 삼선 정합성 표 · 수준 변별력 진단<br>
+            • 채점 실행 가능성 상세 분석<br>
+            • 루브릭 재설계안 포함<br>
+            <span style="color:var(--ok);font-weight:600;">⏱ 약 20~40초</span>
+            <span class="po-warn">⚠️ 토큰 소비 약 3~4배 · 무료 한도 주의</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="rimgbtn-${i}" style="display:none;" onclick="removeAllImgs(${i})">✕ 전체 제거</button>
+        <span id="img-count-${i}" style="font-size:11.5px;color:var(--gray);"></span>
+      </div>
+      <div class="btn-hint-row" id="btn-hint-${i}" style="display:none;">
+        <span>🤖 <b>AI 분석</b> — 점검의견 자동입력 · 빠름</span>
+        <span>📊 <b>상세 분석</b> — 삼선 정합성 심층 보고서 · 새 창 · ⚠️토큰 주의</span>
+      </div>
+      <div class="ai-loading" id="aiload-${i}">
+        <div class="ai-spinner"></div>
+        <div style="font-size:12px;font-weight:700;color:var(--navy);">AI 분석 중... 잠시 기다려 주세요</div>
+      </div>
+      <div id="ai-summary-${i}" style="display:none;margin-top:10px;background:#eef4ff;border:1px solid #b0c8f0;border-radius:4px;padding:10px 12px;font-size:12px;line-height:1.7;color:#2a4a8a;"></div>
+    </div>`;
+
+  // 대영역별 항목 렌더
+  DOMAINS.forEach(domain=>{
+    html+=buildDomainBlock(i, domain);
+  });
+
+  // 기타 의견
+  html+=buildCL4Block(i);
+
+  html+='</div>';
+  div.innerHTML=html;
+  // 이미지 붙여넣기(Ctrl+V) 리스너 등록
+  initPasteUpload(div, i);
+  return div;
+}
+
+function buildDomainBlock(i, domain){
+  let html=`<div class="domain-head">
+    <div class="domain-title">${domain.title}</div>
+    <div class="domain-purpose">${domain.purpose}</div>
+    <div class="domain-desc">${domain.desc}</div>
+  </div>`;
+
+  domain.items.forEach(item=>{
+    html+=`<div class="item-block" id="ib-${i}-${item.key}">
+      <div class="item-head">
+        <div class="item-title">${item.title}</div>
+        <div class="item-purpose" style="color:var(--navy);font-weight:600;margin:4px 0;">📌 ${item.purpose}</div>
+        <div class="item-desc">${item.desc}</div>
+      </div>
+      <div class="item-body">
+        ${item.notice?`<div class="item-notice">${item.notice}</div>`:''}
+        <div class="verdict-row">
+          <input type="radio" class="verdict-radio ok-r" name="v-${i}-${item.key}" id="vok-${i}-${item.key}" value="ok" onchange="onVerdict(${i},'${item.key}','ok')">
+          <label class="verdict-label" for="vok-${i}-${item.key}">✅ 양호</label>
+          <input type="radio" class="verdict-radio req-r" name="v-${i}-${item.key}" id="vreq-${i}-${item.key}" value="req" onchange="onVerdict(${i},'${item.key}','req')">
+          <label class="verdict-label" for="vreq-${i}-${item.key}">📝 수정 의견 제시</label>
+        </div>
+        <div class="subtype-area" id="sa-${i}-${item.key}">
+          <div class="subtype-title">해당하는 유형을 선택하세요 (복수 선택 가능) — 선택 시 점검의견이 자동 생성됩니다</div>
+          ${renderSubtypes(i, item)}
+        </div>
+        <div class="opinion-area">
+          <div class="opinion-label" style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+            <span>
+              <span id="ai-badge-${i}-${item.key}" style="display:none;"><span class="ai-badge">🤖 AI 초안</span></span>
+              ✏️ 점검의견
+            </span>
+            <span style="font-size:11px;color:#888;font-weight:400;">해당하는 유형에 없더라도 점검 시 발견한 사항은 직접 작성해 주세요. 자동 입력된 의견으로 피드백이 충분하지 않은 경우 더 구체적으로 보완해 주세요.</span>
+          </div>
+          <textarea class="opinion-ta" id="ta-${i}-${item.key}" placeholder="판정 선택 후 의견이 자동 입력됩니다. 직접 수정도 가능합니다." oninput="onTaInput(${i},'${item.key}')"></textarea>
+          <div class="ta-actions">
+            <button class="ta-btn" onclick="clearTa(${i},'${item.key}')">🗑 초기화</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function buildCL4Block(i){
+  let html=`<div class="item-block" style="border-color:#c8d8f0;">
+    <div class="item-head" style="background:#e8f0f8;">
+      <div class="item-title" style="color:var(--navy);">3. 평가 운영의 적절성</div>
+      <div class="item-desc">해당하는 항목이 있는 경우 체크하고 점검의견을 확인하세요.</div>
+    </div>
+    <div class="item-body">`;
+  CL4_ITEMS.forEach(grp=>{
+    html+=`<div class="cl4-section">
+      <div class="cl4-head">
+        <div class="cl4-title">${grp.title}</div>
+        <div class="cl4-check">점검: ${grp.check}</div>
+        <div class="cl4-desc">${grp.desc}</div>
+      </div>
+      <div class="cl4-body">`;
+    grp.subtypes.forEach(st=>{
+      const exHtml = st.example ? '<div class="ex-box"><span class="ex-label">📌 부적합 예시</span>'+st.example+'</div>' : '';
+      html += '<label class="cl4-item" id="cl4si-'+i+'-'+st.key+'" for="cl4cb-'+i+'-'+st.key+'">'
+           +  '<input type="checkbox" id="cl4cb-'+i+'-'+st.key+'" data-perf="'+i+'" data-st="'+st.key+'" onchange="onCL4Check(this)">'
+           +  '<div style="flex:1;"><span class="subtype-label">'+st.label+'</span>'+exHtml+'</div>'
+           +  '</label>';
+    });
+    html+=`</div></div>`;
+  });
+  html+=`<div class="opinion-area" style="margin-top:10px;">
+    <div class="opinion-label" style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+      <span>✏️ 점검의견</span>
+      <span style="font-size:11px;color:#888;font-weight:400;">해당하는 유형에 없더라도 점검 시 발견한 사항은 직접 작성해 주세요. 자동 입력된 의견으로 피드백이 충분하지 않은 경우 더 구체적으로 보완해 주세요.</span>
+    </div>
+    <textarea class="opinion-ta" id="ta-${i}-CL4" oninput="onTaInput(${i},'CL4')"></textarea>
+    <div class="ta-actions"><button class="ta-btn" onclick="clearTa(${i},'CL4')">🗑 초기화</button></div>
+  </div>
+  <div style="border-top:2px solid var(--navy-light);margin-top:18px;padding-top:16px;">
+    <div style="background:var(--navy);color:#fff;border-radius:6px 6px 0 0;padding:10px 14px;font-size:13px;font-weight:700;">📝 종합의견</div>
+    <div style="border:1.5px solid var(--navy);border-top:none;border-radius:0 0 6px 6px;padding:14px;">
+      <div style="font-size:11.5px;color:var(--gray);margin-bottom:8px;line-height:1.7;">이 수행평가에 대한 전반적인 종합의견을 자유롭게 작성하세요. 위 점검 항목 외의 긍정적 측면, 개선 권고, 전체 맥락에 대한 의견 등을 포함할 수 있습니다. <strong>워드 출력 시 각 항목 의견과 별도로 맨 아래에 수록됩니다.</strong></div>
+      <textarea class="opinion-ta" id="ta-${i}-OVERALL" placeholder="종합의견을 작성하세요..." oninput="onTaInput(${i},'OVERALL')" style="min-height:100px;border-color:var(--navy);"></textarea>
+      <div class="ta-actions"><button class="ta-btn" onclick="clearTa(${i},'OVERALL')">🗑 초기화</button></div>
+    </div>
+  </div>
+  </div></div>`;
+  return html;
+}
+
+function onCL4Check(el){
+  const i = parseInt(el.dataset.perf);
+  const stKey = el.dataset.st;
+  const p = S.performances[i];
+  if(!p) return;
+  const isChecked = el.checked;
+  const si = document.getElementById('cl4si-'+i+'-'+stKey);
+  if(si) si.classList.toggle('selected', isChecked);
+  if(p[stKey]) p[stKey].checked = isChecked;
+  // 의견 자동 생성
+  let opinions = [];
+  CL4_ITEMS.forEach(grp => grp.subtypes.forEach(st => {
+    const cb = document.getElementById('cl4cb-'+i+'-'+st.key);
+    if(cb && cb.checked) opinions.push(st.opinion);
+  }));
+  const ta = document.getElementById('ta-'+i+'-CL4');
+  if(ta){
+    const aiComment = p['CL4'] && p['CL4'].aiComment ? p['CL4'].aiComment : '';
+    if(opinions.length > 0){
+      const combined = aiComment
+        ? aiComment + '\n\n---\n[유형별 점검 의견]\n' + opinions.join('\n\n')
+        : opinions.join('\n\n');
+      ta.value = combined;
+      if(p['CL4']) p['CL4'].opinion = combined;
+    } else {
+      ta.value = aiComment;
+      if(p['CL4']) p['CL4'].opinion = aiComment;
+    }
+  }
+  saveData();
+}
+
+
+
+// ═══════════════════════════════════════════
+// 판정 & 유형 선택
+// ═══════════════════════════════════════════
+function onVerdict(i, itemKey, val){
+  const p=S.performances[i];
+  if(!p)return;
+  p[itemKey].verdict=val;
+  const sa=document.getElementById(`sa-${i}-${itemKey}`);
+  if(val==='ok'){
+    sa.classList.remove('show');
+    // 양호 선택 시 의견 비움 (기존 AI 의견 있으면 유지)
+    if(!p[itemKey].aiOpinion){
+      const ta=document.getElementById(`ta-${i}-${itemKey}`);
+      if(ta && !ta.value) ta.value='';
+    }
+  } else {
+    sa.classList.add('show');
+  }
+  saveData();
+}
+
+function onGrpCheck(el){
+  const i    = parseInt(el.dataset.perf);
+  const itemKey = el.dataset.item;   // 'A1'
+  const stKey   = el.dataset.st;
+  const p = S.performances[i];
+  if(!p || !p[itemKey]) return;
+
+  const isNowChecked = el.checked;
+  const si = document.getElementById('si-'+i+'-'+stKey);
+  if(si) si.classList.toggle('selected', isNowChecked);
+
+  const arr = p[itemKey].subtypes;
+  if(isNowChecked){ if(!arr.includes(stKey)) arr.push(stKey); }
+  else { const idx=arr.indexOf(stKey); if(idx>-1) arr.splice(idx,1); }
+
+  updateOpinion(i, itemKey);
+  saveData();
+}
+
+function toggleSubtype(i, itemKey, stKey){
+  const p=S.performances[i];
+  if(!p || !p[itemKey])return;
+
+  // 체크박스 상태 직접 읽기 (클릭 후 상태)
+  const cb=document.getElementById(`cb-${i}-${stKey}`);
+  const si=document.getElementById(`si-${i}-${stKey}`);
+  if(!cb)return;
+
+  const isNowChecked = cb.checked;
+  si.classList.toggle('selected', isNowChecked);
+
+  const arr = p[itemKey].subtypes;
+  if(isNowChecked){
+    if(!arr.includes(stKey)) arr.push(stKey);
+  } else {
+    const idx = arr.indexOf(stKey);
+    if(idx > -1) arr.splice(idx, 1);
+  }
+
+  updateOpinion(i, itemKey);
+  saveData();
+}
+
+function updateOpinion(i, itemKey){
+  const p = S.performances[i];
+  if(!p || !p[itemKey]) return;
+
+  // 모든 도메인에서 해당 item 찾기
+  let foundItem = null;
+  for(const domain of DOMAINS){
+    const item = domain.items.find(it => it.key === itemKey);
+    if(item){ foundItem = item; break; }
+  }
+  if(!foundItem) return;
+
+  const selected = p[itemKey].subtypes;
+  const opinions = selected
+    .map(stKey => {
+      const st = foundItem.subtypes.find(s => s.key === stKey);
+      return st ? st.opinion : '';
+    })
+    .filter(Boolean);
+
+  const ta = document.getElementById(`ta-${i}-${itemKey}`);
+  if(ta){
+    if(opinions.length > 0){
+      // AI comment가 이미 있는 경우: AI 의견 뒤에 내장 유형 의견을 추가
+      const aiComment = p[itemKey].aiComment || '';
+      if(aiComment){
+        // 내장 의견과 AI 의견을 합산 (중복 방지)
+        const combined = aiComment + '\n\n---\n[유형별 점검 의견]\n' + opinions.join('\n\n');
+        ta.value = combined;
+        p[itemKey].opinion = combined;
+      } else {
+        ta.value = opinions.join('\n\n');
+        p[itemKey].opinion = ta.value;
+      }
+    } else {
+      // subtype 전부 해제된 경우: AI comment만 남기기
+      const aiComment = p[itemKey].aiComment || '';
+      ta.value = aiComment;
+      p[itemKey].opinion = aiComment;
+    }
+  }
+}
+
+function toggleEtc(i, etKey){
+  const p = S.performances[i];
+  if(!p || !p['ETC']) return;
+
+  const cb = document.getElementById(`ecb-${i}-${etKey}`);
+  const ei = document.getElementById(`ei-${i}-${etKey}`);
+  if(!cb) return;
+
+  const isNowChecked = cb.checked;
+  ei.classList.toggle('selected', isNowChecked);
+
+  const arr = p['ETC'].subtypes;
+  if(isNowChecked){
+    if(!arr.includes(etKey)) arr.push(etKey);
+  } else {
+    const idx = arr.indexOf(etKey);
+    if(idx > -1) arr.splice(idx, 1);
+  }
+
+  // 기타 의견 자동 생성
+  const opinions = p['ETC'].subtypes
+    .map(k => {
+      const et = ETC_ITEMS.find(e => e.key === k);
+      return et ? et.opinion : '';
+    })
+    .filter(Boolean);
+
+  const ta = document.getElementById(`ta-${i}-ETC`);
+  if(ta){
+    ta.value = opinions.join('\n\n');
+    p['ETC'].opinion = ta.value;
+  }
+  saveData();
+}
+
+function clearTa(i, itemKey){
+  const ta=document.getElementById(`ta-${i}-${itemKey}`);
+  if(ta)ta.value='';
+  if(S.performances[i] && S.performances[i][itemKey]) S.performances[i][itemKey].opinion='';
+  saveData();
+}
+
+function onTaInput(i, itemKey){
+  if(S.performances[i] && S.performances[i][itemKey])
+    S.performances[i][itemKey].opinion=document.getElementById(`ta-${i}-${itemKey}`)?.value||'';
+  saveData();
+}
+
+// ═══════════════════════════════════════════
+// 이미지 & AI
+// ═══════════════════════════════════════════
+const MAX_IMGS = 5;
+
+function applyImgData(file, i){
+  if(!file)return;
+  if(!file.type.startsWith('image/')){toast('이미지 파일만 지원합니다');return;}
+  if(file.size>10*1024*1024){toast('10MB 초과');return;}
+  const p=S.performances[i];
+  if(!p.imgs) p.imgs=[];
+  if(p.imgs.length>=MAX_IMGS){toast(`이미지는 최대 ${MAX_IMGS}장까지 등록 가능합니다`);return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    p.imgs.push({b64, type:file.type||'image/png'});
+    renderImgGrid(i);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImg(ev,i){
+  const files=[...ev.target.files];
+  files.forEach(f=>applyImgData(f, i));
+  ev.target.value='';
+}
+
+function renderImgGrid(i){
+  const p=S.performances[i];
+  const imgs=p.imgs||[];
+  const grid=document.getElementById('igrid-'+i);
+  if(!grid)return;
+  grid.innerHTML=imgs.map((img,j)=>`
+    <div class="img-thumb" id="ith-${i}-${j}">
+      <img src="data:${img.type};base64,${img.b64}" alt="이미지 ${j+1}">
+      <button class="img-thumb-rm" onclick="removeImg(${i},${j})" title="이미지 제거">✕</button>
+    </div>`).join('');
+  const hasImg=imgs.length>0;
+  document.getElementById('ai-run-btn-'+i).style.display=hasImg?'inline-block':'none';
+  document.getElementById('po-run-btn-'+i).style.display=hasImg?'inline-flex':'none';
+  document.getElementById('rimgbtn-'+i).style.display=hasImg?'inline-block':'none';
+  // 상세분석 버튼은 AI 분석 완료 후에만 표시 (aiResult 있을 때)
+  const hasResult=!!(S.performances[i]&&S.performances[i].aiResult);
+  document.getElementById('ai-detail-btn-'+i).style.display=hasImg&&hasResult?'inline-block':'none';
+  document.getElementById('po-det-btn-'+i).style.display=hasImg&&hasResult?'inline-flex':'none';
+  const hintRow=document.getElementById('btn-hint-'+i);
+  if(hintRow) hintRow.style.display=hasImg?'flex':'none';
+  const countEl=document.getElementById('img-count-'+i);
+  if(countEl) countEl.textContent=hasImg?`${imgs.length}/${MAX_IMGS}장 등록됨`:'';
+  if(!hasImg) document.getElementById('ai-summary-'+i).style.display='none';
+}
+
+function removeImg(i, j){
+  const p=S.performances[i];
+  if(!p.imgs)return;
+  p.imgs.splice(j,1);
+  renderImgGrid(i);
+}
+
+function removeAllImgs(i){
+  S.performances[i].imgs=[];
+  renderImgGrid(i);
+}
+
+function initPasteUpload(container, i){
+  const zone=container.querySelector('#uz-'+i);
+  if(!zone)return;
+  if(zone.dataset.pasteBound)return;
+  zone.dataset.pasteBound='1';
+  zone.addEventListener('click',()=>zone.focus());
+  if(!window._pasteHandlerRegistered){
+    window._pasteHandlerRegistered=true;
+    document.addEventListener('paste',ev=>{
+      if(S.aiProvider==='none')return;
+      const items=[...(ev.clipboardData?.items||[])];
+      const imgItem=items.find(it=>it.type.startsWith('image/'));
+      if(!imgItem)return;
+      let targetIdx=window._lastPasteTarget??0;
+      ev.preventDefault();
+      const file=imgItem.getAsFile();
+      if(!file)return;
+      toast('📋 클립보드 이미지를 붙여넣고 있습니다...');
+      applyImgData(file, targetIdx);
+    });
+  }
+  zone.addEventListener('mouseenter',()=>{ window._lastPasteTarget=i; });
+  zone.addEventListener('click',()=>{ window._lastPasteTarget=i; });
+}
+
+// AI 점검 지침 (점검단에게는 보이지 않으나 AI 분석 시 참조)
+const AI_SYS=`당신은 대한민국 2022 개정 교육과정 기반 성취평가제 및 수행평가 루브릭 정밀 분석 전문가입니다.
+업로드된 수행평가 채점기준표 이미지를 아래 5개 점검 항목에 따라 면밀히 분석하고, 반드시 순수 JSON만 출력하세요(마크다운 코드블록 없이).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[핵심 분석 원칙: 삼선 정합성(Tri-Alignment)]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+성취기준 ↔ 성취수준 ↔ 채점기준 3요소를 직접 대조하여 분석한다.
+
+① 성취기준에서 추출할 요소
+- 지식·이해: 학생이 이해해야 할 핵심 개념·내용
+- 과정·기능: 탐구·설명·분석·비교·추론·설계·의사소통 등
+- 가치·태도: 과학적 태도·문제해결·협업·자기주도성 등
+- 핵심 동사: 설명한다·분석한다·비교한다·적용한다·설계한다 등
+
+② 성취수준에서 확인할 요소
+- 지식·이해를 어느 수준으로 이해하는가
+- 과정·기능을 어느 수준으로 수행하는가
+- 성취기준의 핵심 동사와 동일하거나 확장된 동사를 사용하는가
+- 수준(A~E 또는 상·중·하) 간 수행 특성이 질적으로 구분되는가
+
+③ 채점기준에서 확인할 요소
+- 평가 요소가 성취수준의 핵심 수행과 대응되는가
+- 채점 기준이 교사가 직접 관찰·확인 가능한 외현적 행동으로 기술되었는가
+- 수준 간 기술어가 채점자 간 일치를 보장할 수준으로 구체적인가
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[5개 점검 항목 분석 지침]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A1. 성취기준과 수행과제의 적절성
+- 제시된 성취기준이 수행과제로 도달 정도를 실질적으로 측정할 수 있는가
+  (성취기준의 지식·이해·과정·기능·가치·태도 요소가 수행과제의 평가 요소에 반영되었는가)
+- 성취기준이 수행과제의 소재·주제로만 활용되고 실제 평가 요소는 성취기준과 무관하지 않은가
+- 성취기준을 과다 통합하여 단일 수행과제로 측정 불가능한 성취기준이 포함되지 않았는가
+- 모든 학생에게 동일한 성취기준이 적용되는가 (학생별 주제 선택으로 성취기준이 달라지는 구조 여부)
+- 채점기준표가 완성된 상태인가 (배점 미제시·항목 누락 등)
+
+A2. 성취수준 평가 요소와 성취기준의 정합성
+- 성취수준이 성취기준의 핵심 동사(설명·분석·추론·적용·설계 등)가 요구하는 수행을 수준별로 기술하는가
+- 성취수준 기술이 성취기준의 지식·이해, 과정·기능, 가치·태도 요소에 실질적으로 연결되는가
+- 보통교과는 A·B·C·D·E 5단계, 예체능·교양교과는 A·B·C 3단계 형식이 적용되었는가
+- 수준 간 수행 특성이 정도 부사(매우·대체로·약간)만 변경하는 방식이 아닌 질적 차이로 구분되는가
+- 성취수준 기술이 성취기준 문장을 그대로 옮기는 수준에 머물지 않고 도달 정도를 구체화하는가
+※ A2에 문제가 있으면 A3도 연동하여 검토할 것
+
+A3. 성취수준과 채점기준의 연결성
+- 채점기준의 평가 요소가 성취수준에서 제시한 핵심 평가 요소와 실질적으로 대응되는가
+- 성취기준·성취수준·교과 과정기능 어디에도 근거 없는 요소(보고서 분량·시각자료 수·발표 목소리 크기·꾸미기 등)가 주요 채점 항목으로 포함되지 않았는가
+- 수행 방식(실험·발표·탐구)에서 비롯된 평가 요소가 포함된 경우, 그 배점 비중이 성취기준 핵심 평가 요소의 비중을 넘지 않는가
+- 성취기준의 일부 요소가 채점기준에 없는 경우, 지필평가에서 별도 평가하는 합리적 이유가 있는가
+
+B1. 채점기준표의 채점 가능성 및 수준 변별력
+- 채점기준이 교사가 학생의 수행 결과물에서 직접 관찰·확인 가능한 외현적 행동으로 기술되었는가
+  (부적절 예: "깊이 있게 이해함", "창의적으로 적용함", "통찰력 있게 설명함", "논리적으로 전개함"
+   → 이런 표현은 수준 간 차이가 명확할 때만 허용 가능; 수준 간 차이가 모호하면 수정 권고)
+- 수준 간 수행 특성의 차이가 "매우 잘함·잘함·보통" 등 정도 표현만으로 구분되지 않고 구체적 행동 수준으로 기술되는가
+- 인접 수준(예: B-C) 간 경계가 채점자가 혼동하지 않을 수준으로 명확한가
+- 채점자 A와 B가 독립 채점해도 동일한 결과가 나올 만큼 채점 기준이 객관적인가
+- 성취수준의 표현을 그대로 채점기준에 옮겨 수준별 수행 특성이 드러나지 않는 경우는 없는가
+
+B2. 채점 방식의 적합성
+- 논증·추론·해석·설계처럼 질적 판단이 필요한 평가 요소를 근거 개수·오류 수·단계 수 등 양적 기준으로만 채점하지 않는가
+- 평가 요소를 O/X 포함 여부로만 판단하고 충족 개수로 수준을 결정하는 방식을 사용하지 않는가
+  (핵심 요소 미충족과 부수적 요소 미충족이 동일 비중으로 처리되는 문제)
+- 분석적 채점과 총체적 채점 방식이 평가 목적·요소의 성격에 부합하게 선택되었는가
+- 수업 시간 내 완성 가능한 분량과 내용으로 설계되어 과제형으로 변질될 위험이 없는가
+- 생성형 AI가 수행 전 과정을 대신할 수 있는 구조이면서 AI 활용 조건·제한이 명시되지 않은 경우는 없는가
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[출력 규칙 — 반드시 준수]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+출력 키는 반드시 A1, A2, A3, B1, B2 5개만 사용하세요. 다른 키는 절대 추가하지 마세요.
+
+verdict 판정 기준:
+- "ok": 해당 항목에서 문제가 발견되지 않은 경우
+- "req": 해당 항목에서 수정이 필요한 문제가 발견된 경우
+
+comment 작성 지침:
+- verdict="req"인 경우: 이미지에서 확인한 구체적 내용(성취기준 코드, 수행과제 문구, 평가 요소명, 배점 수치 등)을 직접 인용하여 무엇이 왜 문제인지 기술하고, 구체적인 개선 방향을 제시하는 4~6문장의 상세한 점검의견을 작성하세요. 단순 요약·일반적 서술·추상적 표현 금지.
+- verdict="ok"인 경우: comment는 반드시 빈 문자열("")로 출력하세요.
+- evidence 필드는 comment 본문에 이미 포함되므로 핵심 인용구(성취기준 코드·평가요소명 등)만 간단히 작성하세요.
+
+summary 작성 지침 (종합의견):
+① 첫 문장: 긍정적 측면이나 준비 노력을 인정하는 표현으로 시작 (예: "채점기준표를 체계적으로 준비하신 점이 인상적입니다")
+② 핵심 문제: 비난·지적 어조 금지 — 함께 개선하자는 협력적 표현 사용 (예: "~을 보완하시면 더욱 신뢰로운 평가가 될 것입니다")
+③ 가장 시급한 항목 1~2개만 구체적으로 언급 (나열 금지)
+④ 마지막 문장: 격려·응원으로 마무리
+전체 4~5문장, 점검단 교사가 선생님께 직접 말하듯 따뜻하고 전문적인 어조
+
+{
+  "summary": "위 지침에 따른 종합의견 4~5문장",
+  "items": {
+    "A1": {
+      "verdict": "ok 또는 req",
+      "evidence": "핵심 인용구 (성취기준 코드·수행과제 문구·평가요소명 등 간단히)",
+      "comment": "verdict=req이면 4~6문장 상세 점검의견, verdict=ok이면 빈 문자열"
+    },
+    "A2": { "verdict": "ok 또는 req", "evidence": "...", "comment": "..." },
+    "A3": { "verdict": "ok 또는 req", "evidence": "...", "comment": "..." },
+    "B1": { "verdict": "ok 또는 req", "evidence": "...", "comment": "..." },
+    "B2": { "verdict": "ok 또는 req", "evidence": "...", "comment": "..." }
+  }
+}`;
+
+async function runAI(i){
+  const p=S.performances[i];
+  if(!p.imgs||p.imgs.length===0){toast('이미지를 먼저 업로드하세요');return;}
+  if(S.aiProvider==='none'){toast('AI 미사용 설정입니다');return;}
+  document.getElementById('aiload-'+i).style.display='block';
+  document.getElementById('ai-summary-'+i).style.display='none';
+  try{
+    let result;
+    if(S.aiProvider==='gemini')result=await callGemini(p.imgs);
+    else result=await callClaude(p.imgs);
+    p.aiResult=result;
+    applyAI(i,result);
+    toast('✅ AI 분석 완료');
+  }catch(e){toast('AI 오류: '+e.message);}
+  finally{document.getElementById('aiload-'+i).style.display='none';}
+}
+
+async function callGemini(imgs){
+  const key=document.getElementById('geminiKey').value.trim();
+  const model=document.getElementById('geminiModel').value;
+  // 이미지가 여러 장인 경우 parts에 순서대로 추가
+  const imgParts=imgs.map((img,j)=>[
+    {text:`[이미지 ${j+1}/${imgs.length}]`},
+    {inlineData:{mimeType:img.type,data:img.b64}}
+  ]).flat();
+  const parts=[{text:AI_SYS+'\n\n아래 채점기준표 이미지('+imgs.length+'장)를 모두 참고하여 분석하세요.'},...imgParts];
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    {method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({contents:[{parts}],
+    generationConfig:{temperature:0.15,maxOutputTokens:2000,responseMimeType:'application/json'}})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
+  const d=await r.json();
+  return parseJ(d.candidates?.[0]?.content?.parts?.[0]?.text||'');
+}
+
+async function callClaude(imgs){
+  const key=document.getElementById('claudeKey').value.trim();
+  // Claude: 이미지 + 텍스트 번갈아 배치
+  const content=imgs.flatMap((img,j)=>[
+    {type:'text',text:`[이미지 ${j+1}/${imgs.length}]`},
+    {type:'image',source:{type:'base64',media_type:img.type,data:img.b64}}
+  ]);
+  content.push({type:'text',text:'위 채점기준표 이미지('+imgs.length+'장)를 모두 참고하여 분석하세요.'});
+  const r=await fetch('https://api.anthropic.com/v1/messages',
+    {method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,system:AI_SYS,
+       messages:[{role:'user',content}]})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
+  const d=await r.json();
+  return parseJ(d.content?.find(c=>c.type==='text')?.text||'');
+}
+
+function parseJ(t){
+  try{return JSON.parse(t.replace(/```json|```/g,'').trim());}
+  catch{return {summary:t,items:{}};}
+}
+
+// ═══════════════════════════════════════════
+// 팝오버 토글
+// ═══════════════════════════════════════════
+function togglePopover(id){
+  const box=document.getElementById(id);
+  if(!box)return;
+  const isShow=box.classList.contains('show');
+  // 모든 팝오버 닫기
+  document.querySelectorAll('.popover-box').forEach(b=>b.classList.remove('show'));
+  if(!isShow) box.classList.add('show');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.classList.contains('popover-icon'))
+    document.querySelectorAll('.popover-box').forEach(b=>b.classList.remove('show'));
+});
+
+// ═══════════════════════════════════════════
+// 상세분석 프롬프트
+// ═══════════════════════════════════════════
+const AI_SYS_DETAIL=`당신은 대한민국 2022 개정 교육과정 기반 성취평가제 및 수행평가 루브릭 정밀 분석 전문가입니다.
+업로드된 수행평가 채점기준표 이미지를 아래 형식에 따라 교육청 컨설팅 보고서 수준으로 상세 분석하세요.
+출력은 마크다운 형식으로 작성하세요.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+분석 원칙: 삼선 정합성(Tri-Alignment)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+성취기준 ↔ 성취수준 ↔ 채점기준 3요소를 직접 대조한다.
+각 요소에서 지식·이해 / 과정·기능 / 가치·태도 / 핵심 동사를 추출하여 비교한다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+출력 형식 (마크다운)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 📋 기본 정보
+- **수행과제**: (이미지에서 확인한 수행과제명)
+- **성취기준 코드**: (코드)
+- **성취기준**: (전문)
+- **종합 판정**: 양호 / 보완 권고 / 전면 재설계 권고
+
+---
+
+## 1. 삼선 정합성(Tri-Alignment) 진단
+
+### 1-1. 성취기준 핵심 요소 분석
+| 구분 | 내용 |
+|---|---|
+| 지식·이해 | (핵심 개념·내용) |
+| 과정·기능 | (탐구·설명·분석·추론 등) |
+| 가치·태도 | (태도·자기주도성 등, 해당 시) |
+| 핵심 동사 | (설명한다·분석한다 등) |
+
+### 1-2. 성취수준 ↔ 성취기준 정합성
+| 점검 항목 | 확인 내용 | 판정 |
+|---|---|---|
+| 핵심 동사 반영 | (성취수준이 성취기준 핵심 동사 수행을 기술하는가) | 양호/보완 |
+| 지식·이해 연결 | (성취기준 지식·이해 요소가 성취수준에 반영되었는가) | 양호/보완 |
+| 과정·기능 연결 | (성취기준 과정·기능 요소가 성취수준에 반영되었는가) | 양호/보완 |
+| 수준 단계 형식 | (보통교과 5단계·예체능 3단계 적용 여부) | 양호/보완 |
+| 수준 간 질적 차이 | (정도 부사만 변경하는 방식이 아닌 질적 차이로 구분되는가) | 양호/보완 |
+
+### 1-3. 성취수준 ↔ 채점기준 연결성
+| 성취수준 핵심 평가 요소 | 채점기준 반영 여부 | 비고 |
+|---|---|---|
+| (요소 1) | 반영/미반영/부분반영 | (설명) |
+| (요소 2) | 반영/미반영/부분반영 | (설명) |
+
+**성취기준·수준 무관 채점 항목 (있는 경우)**
+- (항목명, 배점): 문제점 설명
+
+---
+
+## 2. 채점기준표 정밀 진단
+
+### 2-1. 채점 실행 가능성
+| 채점 항목 | 수준 기술어 | 관찰 가능성 | 채점자 간 일치 가능성 | 판정 |
+|---|---|---|---|---|
+| (항목 1) | (기술어 인용) | 가능/불가 | 높음/낮음 | 양호/보완 |
+| (항목 2) | (기술어 인용) | 가능/불가 | 높음/낮음 | 양호/보완 |
+
+### 2-2. 채점 방식 적합성
+| 구분 | 내용 | 판정 |
+|---|---|---|
+| 질적/양적 채점 | (질적 판단 요소를 양적 기준으로 대체하는 경우 지적) | 양호/보완 |
+| 분석적/총체적 | (평가 목적에 맞는 채점 방식 선택 여부) | 양호/보완 |
+| O/X 판단 방식 | (충족 개수로 수준 결정하는 방식 여부) | 양호/보완 |
+
+### 2-3. 평가 운영 공정성
+| 구분 | 판정 | 내용 |
+|---|---|---|
+| 수업 밀착형 여부 | 양호/위험 | (수업 중 완성 가능한 분량인가) |
+| 과제형 변질 위험 | 낮음/높음 | (가정 과제로 변질될 소지) |
+| AI 대리수행 가능성 | 낮음/높음 | (AI 활용 조건 명시 여부) |
+
+---
+
+## 3. 개선 방향 및 루브릭 재설계(안)
+
+### 3-1. 핵심 수정 사항
+(가장 시급한 수정 사항 2~3개를 구체적으로 기술)
+
+### 3-2. 수정 채점기준표(안)
+(문제가 발견된 채점 항목에 대해 개선된 기준 제시)
+
+| 평가 요소 | 수준 | 수정 채점기준 |
+|---|---|---|
+| (요소명) | A (우수) | (관찰 가능한 외현적 행동으로 기술) |
+| | B (보통) | |
+| | C (노력 요함) | |
+
+---
+
+## 4. 종합 총평
+(전체 수행평가 구성의 강점 1~2개를 먼저 언급하고, 핵심 개선 방향을 교사에게 직접 말하듯 따뜻하고 전문적인 어조로 3~5문장으로 작성)`;
+
+// ═══════════════════════════════════════════
+// 상세분석 실행
+// ═══════════════════════════════════════════
+async function runAIDetail(i){
+  const p=S.performances[i];
+  if(!p.imgs||p.imgs.length===0){toast('이미지를 먼저 업로드하세요');return;}
+  if(S.aiProvider==='none'){toast('AI 미사용 설정입니다');return;}
+
+  // 로딩 창 먼저 열기
+  const loadWin=window.open('','_blank');
+  if(!loadWin){toast('팝업이 차단되었습니다. 브라우저 팝업 허용 후 다시 시도하세요.');return;}
+  loadWin.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<title>상세 분석 중...</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;background:#f5f7fa;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.wrap{text-align:center;color:#1a3d6b;}
+.spinner{width:48px;height:48px;border:4px solid #c8d8f0;border-top-color:#1a3d6b;border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 20px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+h2{font-size:18px;margin-bottom:8px;}
+p{font-size:13px;color:#666;line-height:1.8;}
+.warn{color:#a32d2d;font-size:12px;margin-top:12px;font-weight:600;}</style>
+</head><body>
+<div class="wrap">
+  <div class="spinner"></div>
+  <h2>📊 상세 분석 중...</h2>
+  <p>성취기준·성취수준·채점기준을 대조하는<br>심층 보고서를 생성하고 있습니다.<br>약 20~40초 소요됩니다.</p>
+  <p class="warn">⚠️ 이 분석은 일반 분석보다 토큰을 3~4배 더 소비합니다.</p>
+</div></body></html>`);
+  loadWin.document.close();
+
+  try{
+    let mdText='';
+    if(S.aiProvider==='gemini') mdText=await callGeminiDetail(p.imgs);
+    else mdText=await callClaudeDetail(p.imgs);
+    openAIDetailWindow(i, mdText, loadWin);
+    toast('✅ 상세 분석 완료');
+  }catch(e){
+    loadWin.document.open();
+    loadWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>오류</title>
+<style>body{font-family:'Malgun Gothic',sans-serif;padding:40px;color:#a32d2d;}</style></head>
+<body><h2>❌ 분석 오류</h2><p style="margin-top:12px;">${e.message}</p></body></html>`);
+    loadWin.document.close();
+    toast('상세 분석 오류: '+e.message);
+  }
+}
+
+async function callGeminiDetail(imgs){
+  const key=document.getElementById('geminiKey').value.trim();
+  const model=document.getElementById('geminiModel').value;
+  const imgParts=imgs.map((img,j)=>[
+    {text:`[이미지 ${j+1}/${imgs.length}]`},
+    {inlineData:{mimeType:img.type,data:img.b64}}
+  ]).flat();
+  const parts=[{text:AI_SYS_DETAIL+'\n\n아래 채점기준표 이미지('+imgs.length+'장)를 모두 참고하여 분석하세요.'},...imgParts];
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    {method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({contents:[{parts}],
+     generationConfig:{temperature:0.2,maxOutputTokens:4000}})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
+  const d=await r.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'(결과 없음)';
+}
+
+async function callClaudeDetail(imgs){
+  const key=document.getElementById('claudeKey').value.trim();
+  const content=imgs.flatMap((img,j)=>[
+    {type:'text',text:`[이미지 ${j+1}/${imgs.length}]`},
+    {type:'image',source:{type:'base64',media_type:img.type,data:img.b64}}
+  ]);
+  content.push({type:'text',text:'위 채점기준표 이미지('+imgs.length+'장)를 모두 참고하여 분석하세요.'});
+  const r=await fetch('https://api.anthropic.com/v1/messages',
+    {method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,system:AI_SYS_DETAIL,
+       messages:[{role:'user',content}]})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'HTTP '+r.status);}
+  const d=await r.json();
+  return d.content?.find(c=>c.type==='text')?.text||'(결과 없음)';
+}
+
+function openAIDetailWindow(i, mdText, targetWin){
+  const perfName=document.getElementById('pname-'+i)?.value||`수행평가 ${i+1}`;
+  const sn=document.getElementById('schoolName').value||'';
+  const sub=document.getElementById('subjectName').value||'';
+  const now=new Date().toLocaleString('ko-KR');
+
+  // 마크다운 → HTML 변환 (간단 처리)
+  function md2html(t){
+    return t
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      // 테이블
+      .replace(/^\|(.+)\|$/gm, row=>{
+        const cells=row.slice(1,-1).split('|');
+        return '<tr>'+cells.map(c=>`<td>${c.trim()}</td>`).join('')+'</tr>';
+      })
+      .replace(/(<tr>.*<\/tr>\n?)+/g, t=>`<table>${t}</table>`)
+      .replace(/<table>(<tr><td>-+<\/td>.*?<\/tr>)<\/table>/g,'') // 구분선 행 제거
+      // 제목
+      .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+      .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+      .replace(/^#### (.+)$/gm,'<h4>$1</h4>')
+      // 굵게·기울임
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      // 수평선
+      .replace(/^---$/gm,'<hr>')
+      // 목록
+      .replace(/^- (.+)$/gm,'<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
+      // 줄바꿈
+      .replace(/\n\n/g,'</p><p>')
+      .replace(/\n/g,'<br>');
+  }
+
+  const html=`<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>상세 분석 — ${sn} ${sub} ${perfName}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:13px;background:#f5f7fa;color:#222;padding:24px 20px 60px;}
+.wrap{max-width:900px;margin:0 auto;}
+.result-header{background:#1a3d6b;color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;}
+.result-header h1{font-size:16px;font-weight:800;margin-bottom:4px;}
+.result-header .meta{font-size:11.5px;opacity:.75;margin-top:4px;}
+.warn-box{background:#fdecea;border:1.5px solid #e57373;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#a32d2d;line-height:1.7;}
+.content{background:#fff;border-radius:8px;border:1px solid #dde2ea;padding:24px 28px;line-height:1.8;}
+.content h2{font-size:15px;font-weight:800;color:#1a3d6b;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid #1a3d6b;}
+.content h2:first-child{margin-top:0;}
+.content h3{font-size:13.5px;font-weight:700;color:#1a3d6b;margin:16px 0 8px;}
+.content h4{font-size:12.5px;font-weight:700;color:#444;margin:12px 0 6px;}
+.content table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:12px;}
+.content td,.content th{border:1px solid #c8d8f0;padding:7px 10px;vertical-align:top;line-height:1.6;}
+.content tr:first-child td{background:#e8f0f8;font-weight:700;color:#1a3d6b;}
+.content table tr:nth-child(even) td{background:#f8fafd;}
+.content ul{padding-left:18px;margin:6px 0 12px;}
+.content li{margin-bottom:4px;line-height:1.7;}
+.content hr{border:none;border-top:1.5px solid #e0e8f4;margin:20px 0;}
+.content p{margin-bottom:10px;}
+.content strong{color:#1a3d6b;}
+.print-btn{position:fixed;bottom:24px;right:24px;background:#1a3d6b;color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+.print-btn:hover{background:#122d50;}
+@media print{.print-btn{display:none;}body{background:#fff;padding:12px;}.result-header{border-radius:0;}}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="result-header">
+    <h1>📊 수행평가 채점기준표 상세 분석 보고서</h1>
+    <div class="meta">
+      ${sn?sn+' · ':''}${sub?sub+' · ':''}${perfName} &nbsp;|&nbsp; 분석 일시: ${now}
+    </div>
+  </div>
+  <div class="warn-box">
+    ⚠️ 이 보고서는 AI가 이미지를 분석한 결과입니다. <strong>최종 판단은 반드시 점검단 교사가 직접 검토</strong>하여 결정하시기 바랍니다.
+    AI가 이미지에서 일부 내용을 정확히 인식하지 못할 수 있으므로 원본 채점기준표와 대조하여 확인하세요.
+  </div>
+  <div class="content"><p>${md2html(mdText)}</p></div>
+</div>
+<button class="print-btn" onclick="window.print()">🖨️ 인쇄 / PDF</button>
+</body></html>`;
+
+  targetWin.document.open();
+  targetWin.document.write(html);
+  targetWin.document.close();
+}
+
+function applyAI(i,result){
+  if(!result)return;
+  const summEl=document.getElementById('ai-summary-'+i);
+
+  // 점검자 주의 메시지 + 종합의견
+  summEl.innerHTML=`
+    <div style="background:#fff8e1;border:1.5px solid #f9a825;border-radius:6px;padding:10px 13px;margin-bottom:10px;">
+      <div style="font-size:11.5px;font-weight:800;color:#7d4a00;margin-bottom:4px;">⚠️ AI 분석 결과 활용 시 주의사항</div>
+      <div style="font-size:11.5px;color:#7d4a00;line-height:1.7;">
+        아래는 AI가 이미지를 분석한 결과입니다. AI 의견은 <strong>참고 자료</strong>로만 활용하시고,
+        <strong>최종 판정과 점검의견은 반드시 점검단 교사가 직접 판단</strong>하여 작성하시기 바랍니다.
+        이미지 인식 오류·교과 맥락 이해 부족으로 <strong>판정이 실제와 반대로 나올 수 있습니다.</strong>
+        각 항목을 원본 채점기준표와 반드시 대조하여 확인하세요.
+      </div>
+    </div>
+    <div style="background:#eef4ff;border:1px solid #b0c8f0;border-radius:6px;padding:10px 13px;">
+      <div style="font-size:11px;font-weight:800;color:#2a4a8a;margin-bottom:5px;">🤖 AI 종합 분석의견</div>
+      <div style="font-size:12px;color:#2a4a8a;line-height:1.7;">${result.summary||''}</div>
+    </div>`;
+  summEl.style.display='block';
+  // 상세분석 버튼 활성화
+  const detBtn=document.getElementById('ai-detail-btn-'+i);
+  const detPo=document.getElementById('po-det-btn-'+i);
+  if(detBtn) detBtn.style.display='inline-block';
+  if(detPo) detPo.style.display='inline-flex';
+
+  // AI summary → 종합의견 textarea에 자동 삽입
+  if(result.summary){
+    const overallTa=document.getElementById('ta-'+i+'-OVERALL');
+    if(overallTa){
+      overallTa.value=result.summary;
+      if(S.performances[i]&&S.performances[i]['OVERALL']){
+        S.performances[i]['OVERALL'].opinion=result.summary;
+      }
+    }
+  }
+
+  if(result.items){
+    Object.entries(result.items).forEach(([key,val])=>{
+      if(!val)return;
+      // 항목별 AI 분석 근거 표시
+      const badge=document.getElementById('ai-badge-'+i+'-'+key);
+      if(badge){
+        badge.style.display='inline';
+        // 근거(evidence) 표시 박스
+        const existingEvBox=document.getElementById('ai-ev-'+i+'-'+key);
+        if(!existingEvBox && val.evidence){
+          const ta=document.getElementById('ta-'+i+'-'+key);
+          if(ta){
+            const evBox=document.createElement('div');
+            evBox.id='ai-ev-'+i+'-'+key;
+            evBox.style.cssText='background:#f0f4fa;border:1px solid #c8d8f0;border-radius:4px;padding:8px 11px;margin-bottom:6px;font-size:11.5px;color:#2a4a8a;line-height:1.6;';
+            evBox.innerHTML='<span style="font-weight:700;">📌 AI 확인 근거:</span> '+val.evidence;
+            ta.parentNode.insertBefore(evBox, ta);
+          }
+        }
+      }
+      // 판정 자동 선택 — AI 분석 결과는 기존 선택 무관하게 항상 적용
+      if(val.verdict==='req'){
+        const r=document.getElementById('vreq-'+i+'-'+key);
+        if(r){r.checked=true; onVerdict(i,key,'req');}
+      } else if(val.verdict==='ok'){
+        const r=document.getElementById('vok-'+i+'-'+key);
+        if(r){r.checked=true; onVerdict(i,key,'ok');}
+        // 양호 판정 시 subtype 체크박스 전부 해제
+        const sa=document.getElementById('sa-'+i+'-'+key);
+        if(sa){
+          sa.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+            cb.checked=false;
+            const si=document.getElementById(cb.id.replace('cb-','si-'));
+            if(si) si.classList.remove('selected');
+          });
+          if(S.performances[i]&&S.performances[i][key])
+            S.performances[i][key].subtypes=[];
+        }
+      }
+      // AI 의견 삽입 — req일 때만 삽입, ok일 때는 textarea 비움
+      const ta=document.getElementById('ta-'+i+'-'+key);
+      if(ta){
+        if(val.verdict==='req' && (val.comment||val.evidence)){
+          let insertText='';
+          if(val.evidence && val.comment && !val.comment.includes(val.evidence.slice(0,20))){
+            insertText='[확인 근거] '+val.evidence+'\n\n'+val.comment;
+          } else {
+            insertText=val.comment||val.evidence||'';
+          }
+          ta.value=insertText;
+          if(S.performances[i]&&S.performances[i][key]){
+            S.performances[i][key].opinion=insertText;
+            S.performances[i][key].aiComment=insertText;
+          }
+        } else if(val.verdict==='ok'){
+          ta.value='';
+          if(S.performances[i]&&S.performances[i][key]){
+            S.performances[i][key].opinion='';
+            S.performances[i][key].aiComment='';
+          }
+        }
+      }
+    });
+  }
+}
+
+// ═══════════════════════════════════════════
+// 저장/복원
+// ═══════════════════════════════════════════
+function saveData(){
+  const snap={
+    aiProvider:S.aiProvider,
+    schoolLevel:document.getElementById('schoolLevel').value,
+    schoolName:document.getElementById('schoolName').value,
+    subjectName:document.getElementById('subjectName').value,
+    perfCount:S.perfCount,
+    performances:S.performances.map((p,i)=>({
+      ...p, imgs:[],
+      name:document.getElementById('pname-'+i)?.value||p.name,
+    }))
+  };
+  try{localStorage.setItem('consulting26-v4',JSON.stringify(snap));}catch(e){}
+}
+
+function restoreValues(){
+  S.performances.forEach((p,i)=>{
+    const n=document.getElementById('pname-'+i); if(n)n.value=p.name||'';
+    DOMAINS.forEach(d=>d.items.forEach(item=>{
+      const state=p[item.key];
+      if(!state)return;
+      // 판정 복원
+      if(state.verdict){
+        const r=document.getElementById(`v${state.verdict==='ok'?'ok':'req'}-${i}-${item.key}`);
+        if(r){r.checked=true; onVerdict(i,item.key,state.verdict);}
+      }
+      // 유형 복원
+      (state.subtypes||[]).forEach(stKey=>{
+        const cb=document.getElementById(`cb-${i}-${stKey}`);
+        if(cb){ cb.checked=true; }
+        const si=document.getElementById(`si-${i}-${stKey}`);
+        if(si){ si.classList.add('selected'); }
+      });
+      // 의견 복원
+      const ta=document.getElementById(`ta-${i}-${item.key}`);
+      if(ta&&state.opinion)ta.value=state.opinion;
+    }));
+    // CL4 복원
+    CL4_ITEMS.forEach(grp=>grp.subtypes.forEach(st=>{
+      if(p[st.key]&&p[st.key].checked){
+        const cb=document.getElementById('cl4cb-'+i+'-'+st.key);
+        const si=document.getElementById('cl4si-'+i+'-'+st.key);
+        if(cb)cb.checked=true;
+        if(si)si.classList.add('selected');
+      }
+    }));
+    const cl4ta=document.getElementById('ta-'+i+'-CL4');
+    if(cl4ta&&p['CL4']&&p['CL4'].opinion)cl4ta.value=p['CL4'].opinion;
+    const overallta=document.getElementById('ta-'+i+'-OVERALL');
+    if(overallta&&p['OVERALL']&&p['OVERALL'].opinion)overallta.value=p['OVERALL'].opinion;
+    // 기타 복원
+    const etc=p['ETC'];
+    if(etc){
+      (etc.subtypes||[]).forEach(k=>{
+        const cb=document.getElementById(`ecb-${i}-${k}`);
+        const ei=document.getElementById(`ei-${i}-${k}`);
+        if(cb)cb.checked=true;
+        if(ei)ei.classList.add('selected');
+      });
+      const ta=document.getElementById(`ta-${i}-ETC`);
+      if(ta&&etc.opinion)ta.value=etc.opinion;
+    }
+  });
+}
+
+function saveBackup(){
+  saveData();
+  const d=localStorage.getItem('consulting26-v4')||'{}';
+  const blob=new Blob([d],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`컨설팅_임시저장_${new Date().toISOString().slice(0,10)}.json`;a.click();
+  toast('임시저장 완료');
+}
+
+function loadBackup(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{localStorage.setItem('consulting26-v4',ev.target.result);location.reload();}
+      catch{toast('파일 형식 오류');}
+    };r.readAsText(f);
+  };inp.click();
+}
+
+function resetAll(){
+  if(!confirm('모든 입력 내용이 초기화됩니다. 계속하시겠습니까?'))return;
+  localStorage.removeItem('consulting26-v4');location.reload();
+}
+
+// ═══════════════════════════════════════════
+// 통합 평가계획서 PDF 자동 인식
+//  - 텍스트 규칙 기반 파싱(pdf.js). AI API 미사용.
+//  - "OO학년도 O학기 [과목]과 교수학습 및 평가(운영)계획" 타이틀 단위로
+//    과목 구간을 나누고, 그 안의 "수행평가 영역별 세부 기준"에서
+//    가./나./다... 또는 학년별(가.1학년→1)2)...) 수행평가명을 추출한다.
+// ═══════════════════════════════════════════
+let EXTRACTED_SUBJECTS=[]; // [{subject, grade, names:[...]}]
+let EXTRACTED_SCHOOL={name:'', level:''};
+let CURRENT_SUBJECT_INDEX=-1;
+
+function ensurePdfJs(){
+  return new Promise((resolve,reject)=>{
+    if(window.pdfjsLib){resolve();return;}
+    const check=setInterval(()=>{ if(window.pdfjsLib){clearInterval(check);resolve();} },100);
+    setTimeout(()=>{ clearInterval(check); window.pdfjsLib?resolve():reject(new Error('pdf.js 로드 실패(네트워크 확인)')); },8000);
+  });
+}
+
+async function extractPdfFullText(arrayBuffer){
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await window.pdfjsLib.getDocument({data:arrayBuffer}).promise;
+  const pages=[];
+  for(let p=1;p<=pdf.numPages;p++){
+    const page=await pdf.getPage(p);
+    const content=await page.getTextContent();
+    let line='', out=[];
+    content.items.forEach(item=>{
+      line+=item.str+(item.hasEOL?'':' ');
+      if(item.hasEOL){ out.push(line); line=''; }
+    });
+    if(line) out.push(line);
+    pages.push(out.join('\n'));
+    page.cleanup && page.cleanup();
+  }
+  return pages.join('\n\n');
+}
+
+function guessSchoolLevel(name){
+  if(!name) return '';
+  if(/고등학교|고$/.test(name)) return '고등학교';
+  if(/중학교|중$/.test(name)) return '중학교';
+  return '';
+}
+
+// 마커(가./나./다...) 바로 다음 텍스트에서, 줄바꿈이나 "수행 과제" 라벨
+// 직전까지를 짧은 이름으로 잘라낸다.
+function extractShortLabel(chunk, maxLen){
+  let s=chunk;
+  const stopIdx=s.search(/\n|수행\s*과제/);
+  if(stopIdx>0) s=s.slice(0,stopIdx);
+  s=s.trim().replace(/\s{2,}/g,' ').replace(/\s+([,.:;)])/g,'$1').replace(/([(])\s+/g,'$1');
+  if(s.length>maxLen) s=s.slice(0,maxLen);
+  return s;
+}
+
+// "수행평가 영역별 세부 기준" 섹션 텍스트에서 수행평가명 목록을 뽑는다.
+// - 가./나./다... 가 바로 수행평가명인 경우: {flat:[...]}
+// - 가./나./다... 가 "1학년" 같은 학년 구분이고 그 안에 1)2)3...으로
+//   수행평가명이 나오는 경우: {byGrade:{'1학년':[...], ...}}
+// 주의: 마커는 반드시 줄바꿈 직후여야 인정한다(줄 중간의 "~한다." 같은 문장 종결
+// "다."가 표 안에서 우연히 마커처럼 보이는 오인식을 막기 위함). 또한 가→나→다...
+// 순서를 지키는 마커만 인정해 채점표 안에서 재사용된 가/나/다 나열과 구분한다.
+function parsePerfNames(detail){
+  const topRe=/(?:^|\n)(가|나|다|라|마|바|사|아|자|차)\s*\.\s*/g;
+  const KOR=['가','나','다','라','마','바','사','아','자','차'];
+  const allTop=[]; let m;
+  while((m=topRe.exec(detail))) allTop.push({marker:m[1], start:m.index+m[0].length});
+  const tops=[]; let expectTop=0;
+  allTop.forEach(t=>{ if(expectTop<KOR.length && t.marker===KOR[expectTop]){ tops.push(t); expectTop++; } });
+  if(tops.length===0) return {flat:[]};
+  const flat=[]; let byGrade=null;
+  tops.forEach((t,i)=>{
+    const chunkEnd=i+1<tops.length? tops[i+1].start-2 : detail.length;
+    const chunk=detail.slice(t.start, Math.max(t.start,chunkEnd));
+    const peek=extractShortLabel(chunk,20);
+    if(/^\d\s*학년/.test(peek)){
+      if(!byGrade) byGrade={};
+      const gradeLabel=(peek.match(/\d\s*학년/)||[peek])[0].replace(/\s+/g,'');
+      const subRe=/(?:^|\n)(\d{1,2})\s*\)\s*/g;
+      const allSubs=[]; let sm;
+      while((sm=subRe.exec(chunk))) allSubs.push({n:parseInt(sm[1],10), start:sm.index+sm[0].length});
+      const subs=[]; let expectSub=1;
+      allSubs.forEach(s=>{ if(s.n===expectSub){ subs.push(s); expectSub++; } });
+      const names=[];
+      subs.forEach((s,j)=>{
+        const end=j+1<subs.length? subs[j+1].start-2 : chunk.length;
+        const nm=extractShortLabel(chunk.slice(s.start,Math.max(s.start,end)),60);
+        if(nm) names.push(nm);
+      });
+      if(names.length) byGrade[gradeLabel]=(byGrade[gradeLabel]||[]).concat(names);
+    } else {
+      const nm=extractShortLabel(chunk,60);
+      if(nm) flat.push(nm);
+    }
+  });
+  // 한글이 없거나 지나치게 짧은(숫자만 등) 항목은 표/줄바꿈 오인식으로 보고 제거
+  const isValid=nm=>/[가-힣]/.test(nm) && nm.replace(/[^가-힣a-zA-Z]/g,'').length>=2;
+  if(byGrade){ Object.keys(byGrade).forEach(g=>{ byGrade[g]=byGrade[g].filter(isValid); }); return {flat:[], byGrade}; }
+  return {flat:flat.filter(isValid)};
+}
+
+function parseIntegratedPlan(text){
+  // pdf.js가 숫자와 뒤따르는 한글 단위(학년도/학기/학년/반) 사이에 잘못 끼워넣는
+  // 공백을 정리한다("2026 학년도" → "2026학년도").
+  text = text.replace(/(\d)\s+(학년도|학기|학년|반)/g,'$1$2');
+  const titleRe=/\d{4}학년도\s*\d학기\s*\[?\s*([가-힣ㆍ·\s]{1,20}?)\s*\]?\s*과\s*교수\s*[·ㆍ.․]?\s*학습\s*및\s*평가\s*(?:운영\s*)?계획/g;
+  const matches=[]; let m;
+  while((m=titleRe.exec(text))) matches.push({index:m.index, end:titleRe.lastIndex, subject:m[1].replace(/\s+/g,'')});
+  let schoolName='';
+  const subjects=[];
+  matches.forEach((mt,idx)=>{
+    const sectionEnd=idx+1<matches.length? matches[idx+1].index : text.length;
+    const section=text.slice(mt.end, sectionEnd);
+    const infoM=section.match(/학교명\s*학년\s*과목\s*학기\s*학급\s*지도교사\s*([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)/);
+    let grade='';
+    if(infoM){ if(!schoolName) schoolName=infoM[1]; grade=infoM[2]; }
+    const detailM=section.match(/수행평가\s*영역별\s*세부\s*기준([\s\S]*?)(?=평가\s*미응시자|$)/);
+    if(!detailM) return;
+    const items=parsePerfNames(detailM[1]);
+    if(items.byGrade){
+      Object.keys(items.byGrade).forEach(g=>subjects.push({subject:mt.subject, grade:g, names:items.byGrade[g]}));
+    } else if(items.flat.length){
+      subjects.push({subject:mt.subject, grade:grade, names:items.flat});
+    }
+  });
+  return {school:{name:schoolName, level:guessSchoolLevel(schoolName)}, subjects};
+}
+
+function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function handlePlanPdf(ev){
+  const f=ev.target.files[0];
+  if(!f) return;
+  document.getElementById('planload').style.display='block';
+  document.getElementById('planResultWrap').style.display='none';
+  try{
+    await ensurePdfJs();
+    const buf=await f.arrayBuffer();
+    const text=await extractPdfFullText(buf);
+    const parsed=parseIntegratedPlan(text);
+    if(parsed.subjects.length===0){
+      toast('과목을 인식하지 못했습니다. PDF 형식을 확인해주세요.');
+    } else {
+      EXTRACTED_SUBJECTS=parsed.subjects;
+      EXTRACTED_SCHOOL=parsed.school;
+      CURRENT_SUBJECT_INDEX=-1;
+      if(EXTRACTED_SCHOOL.name) document.getElementById('schoolName').value=EXTRACTED_SCHOOL.name;
+      if(EXTRACTED_SCHOOL.level) document.getElementById('schoolLevel').value=EXTRACTED_SCHOOL.level;
+      saveData();
+      renderExtractedTable();
+      document.getElementById('nextSubjectWrap').style.display=EXTRACTED_SUBJECTS.length?'block':'none';
+      toast(`${parsed.subjects.length}개 과목(학년) 인식 완료`);
+    }
+  }catch(e){
+    console.error(e);
+    toast('PDF 분석 중 오류가 발생했습니다: '+(e.message||e));
+  }finally{
+    document.getElementById('planload').style.display='none';
+    ev.target.value='';
+  }
+}
+
+function renderExtractedTable(){
+  const tbody=document.getElementById('planTableBody');
+  tbody.innerHTML='';
+  EXTRACTED_SUBJECTS.forEach((s,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);font-weight:700;">${escHtml(s.subject)}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);">${escHtml(s.grade||'-')}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--gray);">${s.names.length?s.names.map(escHtml).join(' / '):'<span style="color:#c33;">인식 실패</span>'}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;">${s.names.length}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;">
+        <button class="btn btn-primary btn-sm" ${s.names.length===0?'disabled':''} onclick="applyExtractedSubject(${i})">이 과목 사용</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('planSummary').textContent=
+    `인식됨: ${EXTRACTED_SCHOOL.name||'(학교명 미인식)'}${EXTRACTED_SCHOOL.level?'('+EXTRACTED_SCHOOL.level+')':''} · 과목(학년) ${EXTRACTED_SUBJECTS.length}건`;
+  document.getElementById('planResultWrap').style.display='block';
+}
+
+function hasExistingPerfData(){
+  return S.performances.some(p=>(p.name&&p.name.trim())||Object.keys(p).some(k=>p[k]&&p[k].opinion&&p[k].opinion.trim()));
+}
+
+function setPerfNamesAbsolute(names){
+  const n=Math.max(1,Math.min(12,names.length||1));
+  S.perfCount=n;
+  S.performances=[];
+  for(let k=0;k<n;k++){
+    const p=initPerf();
+    p.name=names[k]||'';
+    S.performances.push(p);
+  }
+  document.getElementById('cntDisplay').textContent=n;
+  document.getElementById('cntMinus').disabled=n<=1;
+  document.getElementById('cntPlus').disabled=n>=12;
+  renderPerfs();
+}
+
+function scrollToStep2(){
+  const head=document.getElementById('step2Head');
+  if(!head) return;
+  const appHeader=document.querySelector('.app-header');
+  const headerH=appHeader? appHeader.getBoundingClientRect().height : 0;
+  const rect=head.getBoundingClientRect();
+  const targetY=window.pageYOffset+rect.top-headerH-12;
+  window.scrollTo({top:Math.max(0,targetY), behavior:'smooth'});
+}
+
+function applyExtractedSubject(i){
+  const s=EXTRACTED_SUBJECTS[i];
+  if(!s) return;
+  if(hasExistingPerfData() && !confirm('현재 입력된 수행평가 항목이 모두 새 과목 내용으로 대체됩니다. 계속할까요?')) return;
+  document.getElementById('subjectName').value=s.grade? `${s.subject}(${s.grade})` : s.subject;
+  setPerfNamesAbsolute(s.names);
+  CURRENT_SUBJECT_INDEX=i;
+  saveData();
+  toast(`'${s.subject}' 수행평가 ${s.names.length}개가 등록되었습니다`);
+  scrollToStep2();
+}
+
+function goToNextSubject(){
+  if(EXTRACTED_SUBJECTS.length===0){ toast('먼저 PDF를 업로드해 인식하세요'); return; }
+  const nextIdx=CURRENT_SUBJECT_INDEX+1;
+  if(nextIdx>=EXTRACTED_SUBJECTS.length){
+    toast('마지막 과목입니다. 더 이상 다음 과목이 없습니다.');
+    return;
+  }
+  applyExtractedSubject(nextIdx);
+}
+
+function exportExtractedCSV(){
+  if(EXTRACTED_SUBJECTS.length===0){ toast('먼저 PDF를 업로드해 인식하세요'); return; }
+  const rows=[['학교급','학교명','과목','학년','수행평가명','수행평가개수']];
+  EXTRACTED_SUBJECTS.forEach(s=>{
+    rows.push([EXTRACTED_SCHOOL.level, EXTRACTED_SCHOOL.name, s.subject, s.grade||'', s.names.join(' / '), s.names.length]);
+  });
+  const csv=rows.map(r=>r.map(v=>{
+    v=String(v==null?'':v);
+    if(/[",\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"';
+    return v;
+  }).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`평가계획_자동인식_${EXTRACTED_SCHOOL.name||'학교'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('CSV 다운로드 완료 - 구글시트에서 파일 > 가져오기로 열 수 있어요');
+}
+
+// ═══════════════════════════════════════════
+// 결과 출력
+// ═══════════════════════════════════════════
+function buildResultText(){
+  const lv=document.getElementById('schoolLevel').value||'';
+  const sn=document.getElementById('schoolName').value||'';
+  const sub=document.getElementById('subjectName').value||'';
+  let txt=`[2026 평가계획서 서면 컨설팅 결과]\n학교급: ${lv}  학교명: ${sn}  과목명: ${sub}\n${'='.repeat(50)}\n\n`;
+  for(let i=0;i<S.perfCount;i++){
+    const name=document.getElementById('pname-'+i)?.value||`수행평가 ${i+1}`;
+    txt+=`▶ ${name}\n\n`;
+    DOMAINS.forEach(d=>{
+      txt+=`【${d.title}】\n`;
+      if(d.key==='B' && hasAIssue){
+        perfHtml+=`<div style="background:#fff8e1;border:1.5px solid #f9a825;border-radius:5px;padding:9px 13px;margin-bottom:10px;font-size:12px;color:#7d4a00;line-height:1.7;">
+          ⚠️ A 영역(정합성)에서 점검의견이 제시되었습니다. 수행과제와 성취기준의 정합성이 확보되지 않은 상태에서는 채점기준표가 신뢰롭게 작성되었더라도 성취기준 도달 정도를 측정한다고 보기 어렵습니다. B 영역의 점검 결과는 A 영역 수정을 전제로 참고하시기 바랍니다.
+        </div>`;
+      }
+      d.items.forEach(item=>{
+        const p=S.performances[i];
+        const st=p?p[item.key]:{};
+        const verdict=st.verdict==='ok'?'양호':st.verdict==='req'?'수정 의견 제시':'미판정';
+        const opinion=document.getElementById(`ta-${i}-${item.key}`)?.value||'';
+        txt+=`${item.title}: [${verdict}]\n`;
+        if(opinion)txt+=`${opinion}\n`;
+        txt+='\n';
+      });
+    });
+    const etcOpinion=document.getElementById(`ta-${i}-ETC`)?.value||'';
+    if(etcOpinion)txt+=`【기타 의견】\n${etcOpinion}\n\n`;
+    txt+='-'.repeat(40)+'\n\n';
+  }
+  return txt;
+}
+
+function openResultWindow(){
+  const lv=document.getElementById('schoolLevel').value||'학교급 미입력';
+  const sn=document.getElementById('schoolName').value||'학교명 미입력';
+  const sub=document.getElementById('subjectName').value||'과목명 미입력';
+
+  // A영역 부적합 여부 확인
+  const hasAIssue = S.performances.some((p,idx)=>
+    ['A1','A2','A3'].some(k=>p[k]&&p[k].verdict==='req')
+  );
+  let perfHtml='';
+  for(let i=0;i<S.perfCount;i++){
+    const name=document.getElementById('pname-'+i)?.value||'수행평가 '+(i+1);
+    perfHtml+=`<div class="perf-section">
+      <div class="perf-title">▶ ${name}</div>`;
+
+    DOMAINS.forEach(d=>{
+      perfHtml+=`<div class="domain-label">${d.title}</div>`;
+      d.items.forEach(item=>{
+        const p=S.performances[i];
+        const st=p?p[item.key]:{};
+        const verdict=st.verdict==='ok'?'양호':st.verdict==='req'?'수정 의견 제시':'미판정';
+        const vClass=st.verdict==='ok'?'v-ok':st.verdict==='req'?'v-req':'v-none';
+        const opinion=document.getElementById('ta-'+i+'-'+item.key)?.value||'';
+        // AI 근거
+        const evBox=document.getElementById('ai-ev-'+i+'-'+item.key);
+        const evidence=evBox?evBox.innerText.replace('📌 AI 확인 근거: ',''):'';
+        perfHtml+=`<div class="item-row">
+          <div class="item-row-head">
+            <span class="item-name">${item.title}</span>
+            <span class="verdict-tag ${vClass}">${verdict}</span>
+          </div>
+          ${evidence?`<div class="evidence-box">📌 AI 확인 근거: ${evidence}</div>`:''}
+          ${opinion?`<div class="opinion-box">${opinion.replace(/\n/g,'<br>')}</div>`:'<div class="opinion-empty">의견 없음</div>'}
+        </div>`;
+      });
+    });
+
+    // CL4 결과
+    const cl4Opinion=document.getElementById('ta-'+i+'-CL4')?.value||'';
+    if(cl4Opinion){
+      perfHtml+=`<div class="domain-label">항목 2 | 암기형·과제형·AI 대리 수행</div>
+        <div class="item-row"><div class="opinion-box">${cl4Opinion.replace(/\n/g,'<br>')}</div></div>`;
+    }
+    const etcOpinion=document.getElementById('ta-'+i+'-ETC')?.value||'';
+    if(etcOpinion){
+      perfHtml+=`<div class="domain-label">기타 의견</div>
+        <div class="item-row">
+          <div class="opinion-box">${etcOpinion.replace(/\n/g,'<br>')}</div>
+        </div>`;
+    }
+    const overallOpinion=document.getElementById('ta-'+i+'-OVERALL')?.value||'';
+    if(overallOpinion){
+      perfHtml+=`<div class="domain-label" style="background:#e8f0f8;color:#1a3d6b;font-weight:800;">📝 종합의견</div>
+        <div class="item-row">
+          <div class="opinion-box" style="border-left-color:#1a3d6b;border-left-width:4px;">${overallOpinion.replace(/\n/g,'<br>')}</div>
+        </div>`;
+    }
+    perfHtml+='</div>';
+  }
+
+  const html=`<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>점검결과 — ${sn} ${sub}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:13px;background:#f5f7fa;color:#222;padding:24px 20px;}
+  .result-wrap{max-width:860px;margin:0 auto;}
+  .result-header{background:#1a3d6b;color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;}
+  .result-header h1{font-size:17px;font-weight:800;margin-bottom:4px;}
+  .result-header .meta{font-size:12px;opacity:.75;}
+  .perf-section{background:#fff;border-radius:8px;border:1px solid #dde2ea;margin-bottom:16px;overflow:hidden;}
+  .perf-title{background:#1a3d6b;color:#fff;padding:11px 16px;font-size:13.5px;font-weight:800;}
+  .domain-label{background:#e8f0f8;padding:7px 16px;font-size:11.5px;font-weight:800;color:#1a3d6b;border-bottom:1px solid #c8d8f0;}
+  .item-row{padding:12px 16px;border-bottom:1px solid #eee;}
+  .item-row:last-child{border-bottom:none;}
+  .item-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .item-name{font-size:12.5px;font-weight:700;color:#1a3d6b;}
+  .verdict-tag{font-size:11px;font-weight:800;padding:3px 11px;border-radius:12px;}
+  .v-ok{background:#e8f5e9;color:#1d6a3a;border:1px solid #7bc89a;}
+  .v-req{background:#fdecea;color:#a32d2d;border:1px solid #e57373;}
+  .v-none{background:#f0f0f0;color:#888;border:1px solid #ccc;}
+  .evidence-box{background:#f0f4fa;border:1px solid #c8d8f0;border-radius:4px;padding:7px 10px;font-size:11.5px;color:#2a4a8a;margin-bottom:6px;line-height:1.6;}
+  .opinion-box{background:#fafbfd;border-left:3px solid #1a3d6b;padding:8px 12px;font-size:12.5px;line-height:1.75;color:#333;border-radius:0 4px 4px 0;}
+  .opinion-empty{font-size:12px;color:#aaa;font-style:italic;}
+  .ai-notice{background:#fff8e1;border:1.5px solid #f9a825;border-radius:6px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:#7d4a00;line-height:1.7;}
+  .print-btn{position:fixed;bottom:24px;right:24px;background:#1a3d6b;color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+  .print-btn:hover{background:#122d50;}
+  @media print{.print-btn{display:none;} body{background:#fff;padding:12px;} .result-header{border-radius:0;}}
+</style>
+</head><body>
+<div class="result-wrap">
+  <div class="result-header">
+    <h1>2026 평가계획서 서면 컨설팅 결과</h1>
+    <div class="meta">학교급: ${lv} &nbsp;/&nbsp; 학교명: ${sn} &nbsp;/&nbsp; 과목명: ${sub}</div>
+  </div>
+  <div class="ai-notice">
+    <strong>⚠️ 이 결과서에는 AI 분석 의견이 포함될 수 있습니다.</strong><br>
+    AI 의견은 참고 자료이며, 최종 판정과 점검의견은 점검단 교사가 직접 검토하여 결정한 것입니다.
+    AI가 제시한 판정·의견을 그대로 수용하지 않고 전문가 판단을 거쳐 작성되었음을 확인하시기 바랍니다.
+  </div>
+  ${perfHtml}
+</div>
+<button class="print-btn" onclick="window.print()">🖨️ 인쇄 / PDF</button>
+</body></html>`;
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
+}
+
+function downloadDocx(){
+  if(typeof JSZip==='undefined'){toast('JSZip 로딩 중...');return;}
+  const zip=new JSZip();
+  const lv=document.getElementById('schoolLevel').value||'';
+  const sn=document.getElementById('schoolName').value||'';
+  const sub=document.getElementById('subjectName').value||'';
+  const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const rpr=(sz,bold,col)=>`<w:rPr>${bold?'<w:b/>':''}<w:sz w:val="${sz}"/><w:color w:val="${col||'000000'}"/><w:rFonts w:ascii="맑은 고딕" w:hAnsi="맑은 고딕"/></w:rPr>`;
+  const sp=(after)=>`<w:spacing w:after="${after||80}"/>`;
+
+  const para=(text,sz,bold,col,after,indent)=>{
+    if(!text&&text!==0)return'';
+    return (text+'').split('\n').map(line=>`<w:p><w:pPr>${sp(after||80)}${indent?`<w:ind w:left="${indent}"/>`:''}
+    </w:pPr><w:r>${rpr(sz||22,bold,col||'222222')}<w:t xml:space="preserve">${esc(line||' ')}</w:t></w:r></w:p>`).join('');
+  };
+  const hr=(col)=>`<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="${col||'1a3d6b'}"/></w:pBdr>${sp(80)}</w:pPr></w:p>`;
+
+  // 전체 문서 너비: 8640 twips (A4 가로 - 여백)
+  const TW=8640;
+  const tcBdr=`<w:tcBorders><w:top w:val="single" w:sz="4" w:color="c8d8f0"/><w:left w:val="single" w:sz="4" w:color="c8d8f0"/><w:bottom w:val="single" w:sz="4" w:color="c8d8f0"/><w:right w:val="single" w:sz="4" w:color="c8d8f0"/></w:tcBorders>`;
+  const tcMar=`<w:tcMar><w:top w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar>`;
+
+  // 셀 생성
+  const cell=(text,w,shade,bold,sz,col,vAlign)=>{
+    const lines=(text||'').split('\n');
+    const paras=lines.map(l=>`<w:p><w:pPr>${sp(40)}</w:pPr><w:r>${rpr(sz||20,bold,col||'222222')}<w:t xml:space="preserve">${esc(l||' ')}</w:t></w:r></w:p>`).join('');
+    return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shade?`<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>`:''}${tcBdr}${tcMar}${vAlign?`<w:vAlign w:val="${vAlign}"/>`:'<w:vAlign w:val="center"/>'}</w:tcPr>${paras}</w:tc>`;
+  };
+  // 병합 셀 (가로 전체)
+  const cellFull=(text,shade,bold,sz,col)=>{
+    const lines=(text||'').split('\n');
+    const paras=lines.map(l=>`<w:p><w:pPr>${sp(40)}</w:pPr><w:r>${rpr(sz||20,bold,col||'222222')}<w:t xml:space="preserve">${esc(l||' ')}</w:t></w:r></w:p>`).join('');
+    return `<w:tc><w:tcPr><w:tcW w:w="${TW}" w:type="dxa"/>${shade?`<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>`:''}${tcBdr}${tcMar}<w:gridSpan w:val="2"/></w:tcPr>${paras}</w:tc>`;
+  };
+  const tr=(...cells)=>`<w:tr>${cells.join('')}</w:tr>`;
+  const tblGrid2=`<w:tblGrid><w:gridCol w:w="2400"/><w:gridCol w:w="6240"/></w:tblGrid>`;
+  const tblGrid3=`<w:tblGrid><w:gridCol w:w="1440"/><w:gridCol w:w="3000"/><w:gridCol w:w="4200"/></w:tblGrid>`;
+  const tblPr=`<w:tblPr><w:tblW w:w="${TW}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:insideH w:val="single" w:sz="4" w:color="c8d8f0"/><w:insideV w:val="single" w:sz="4" w:color="c8d8f0"/></w:tblBorders></w:tblPr>`;
+  const tblOpen=`<w:tbl>${tblPr}${tblGrid2}`;
+  const tblOpen3=`<w:tbl>${tblPr}${tblGrid3}`;
+  const tblClose=`</w:tbl><w:p><w:pPr>${sp(120)}</w:pPr></w:p>`;
+
+  const CORE_Q={
+    'A1':'수행과제를 통해 성취기준의 도달 정도를 실질적으로 측정할 수 있는가?',
+    'A2':'성취기준의 평가 요소와 성취수준의 기술 내용이 정합적으로 연결되어 있는가?',
+    'A3':'채점기준의 평가 요소가 성취수준의 핵심 평가 요소와 실질적으로 연결되어 있는가?',
+    'B1':'채점기준이 교사가 학생의 수행 수준을 구분하고 직접 관찰·확인하여 채점할 수 있도록 구체적으로 기술되어 있는가?',
+    'B2':'질적 판단이 필요한 평가 요소를 개수·O/X 등 양적 기준으로만 채점하지 않는가?',
+  };
+  const ITEM_T={
+    'A1':'1-1. 성취기준과 수행과제의 적절성',
+    'A2':'1-2. 성취수준 평가 요소와 성취기준의 정합성',
+    'A3':'1-3. 성취수준과 채점기준의 연결성',
+    'B1':'2-1. 채점기준표의 채점 가능성',
+    'B2':'2-2. 채점 방식의 적합성',
+  };
+  const ALL_OK_MSG='제출하신 수행평가 채점기준표는 성취기준과 수행과제의 연계성, 성취수준의 기술 방식, 채점기준표의 구성 측면에서 전반적으로 잘 갖추어진 것으로 검토되었습니다. 바쁜 일정 속에서도 학생을 위한 평가 계획을 세심하게 준비해 주신 덕분입니다. 다만 서면 점검의 특성상 점검단의 판단에 부분적인 한계가 있을 수 있으니, 평가 시행 전 채점기준표를 한 번 더 살펴보시고 필요한 부분이 있다면 조금씩 다듬어 주시면 더욱 좋겠습니다. 선생님의 평가가 학생들의 성장을 이끄는 소중한 과정이 되기를 바랍니다.';
+
+  let body='';
+
+  // ── 취지문
+  body+=para('2026학년도 2학기 수행평가 채점기준표 컨설팅 결과',28,true,'1a3d6b',120);
+  body+=hr();
+  body+=para('이 컨설팅은 선생님의 평가 계획 수립을 지원하기 위한 것입니다. 방학 중에도 학생을 위한 평가 계획을 꼼꼼히 준비해 주신 선생님들께 진심으로 감사드립니다.',21,false,'333333',60);
+  body+=para('이번 서면 컨설팅은 제출하신 채점기준표를 바탕으로 성취기준과의 정합성, 루브릭의 적절성 등을 함께 살펴보는 과정입니다. 평가의 적절성을 판단하는 것이 아니라, 보다 공정하고 신뢰로운 평가가 이루어질 수 있도록 함께 검토하는 자리입니다.',21,false,'333333',60);
+  body+=para('평가지원단 선생님들이 오류를 최소화하기 위해 노력하였으나, 서면 점검의 특성상 부분적으로 한계가 있을 수 있습니다. 제시된 수정 의견은 참고 자료로 활용하시되, 최종 판단은 담당 선생님께서 하시기 바랍니다.',21,false,'333333',60);
+  body+=para('이 결과를 바탕으로 학생들의 성장을 이끄는 더욱 좋은 평가 계획이 완성되기를 바랍니다.',21,true,'1a3d6b',160);
+  body+=hr('cccccc');
+
+  // ── 기본정보
+  body+=para('기본 정보',22,true,'1a3d6b',60);
+  body+=tblOpen;
+  body+=tr(cell('학교급',1440,'e8f0f8',true,20,'1a3d6b'),cell('학교명',3000,'e8f0f8',true,20,'1a3d6b'),cell(sub,4200,'e8f0f8',true,20,'1a3d6b'));
+  body+=tr(cell(lv,1440,'',false,20),cell(sn,3000,'',false,20),cell(sub,4200,'',false,20));
+  body+=tblClose;
+
+  // ── 수행평가별
+  for(let i=0;i<S.perfCount;i++){
+    const name=document.getElementById('pname-'+i)?.value||`수행평가 ${i+1}`;
+    const p=S.performances[i];
+
+    body+=hr();
+    body+=para(`▶ 수행평가 ${i+1}: ${name}`,24,true,'1a3d6b',100);
+
+    // ── 각 항목 의견 DOM에서 직접 수집 (수동 입력 포함)
+    const allItems=['A1','A2','A3','B1','B2'];
+    const getOp=k=>document.getElementById(`ta-${i}-${k}`)?.value||'';
+
+    // 전체 양호 여부: 판정이 req이거나 의견이 수동 작성된 항목이 하나라도 있으면 allOk=false
+    const hasAnyIssue=allItems.some(k=>p&&p[k]&&p[k].verdict==='req');
+    const hasAnyOpinion=allItems.some(k=>getOp(k).trim()!=='');
+    const cl4Checked=typeof CL4_ITEMS!=='undefined'&&CL4_ITEMS.some(grp=>grp.subtypes.some(st=>{
+      const cb=document.getElementById(`cl4cb-${i}-${st.key}`);return cb&&cb.checked;
+    }));
+    const cl4Op=getOp('CL4');
+    const etcOp=document.getElementById(`ta-${i}-ETC`)?.value||'';
+    const overallOp=getOp('OVERALL');
+    const allOk=!hasAnyIssue&&!hasAnyOpinion&&!cl4Checked&&!cl4Op&&!etcOp&&!overallOp;
+
+    if(allOk){
+      // 전체 양호 메시지
+      body+=`<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="12" w:space="4" w:color="1d6a3a"/></w:pBdr><w:ind w:left="200"/>${sp(120)}</w:pPr><w:r>${rpr(21,false,'1d6a3a')}<w:t xml:space="preserve">${esc(ALL_OK_MSG)}</w:t></w:r></w:p>`;
+      // 종합의견은 allOk이어도 작성 시 출력 (이미 overallOp='' 조건에서 걸러짐)
+      continue;
+    }
+
+    const hasAIssue=['A1','A2','A3'].some(k=>p&&p[k]&&p[k].verdict==='req');
+
+    // ── A영역: 수정의견(req) 또는 수동 의견 작성된 항목 모두 출력
+    const aItems=['A1','A2','A3'].filter(k=>{
+      const isReq=p&&p[k]&&p[k].verdict==='req';
+      const hasOp=getOp(k).trim()!=='';
+      return isReq||hasOp;
+    });
+    if(aItems.length>0){
+      body+=para('A. 정합성',22,true,'1a3d6b',60);
+      body+=tblOpen;
+      body+=tr(
+        cell('점검 항목',2400,'1a3d6b',true,19,'ffffff'),
+        cell('핵심 질문',6240,'1a3d6b',true,19,'ffffff')
+      );
+      aItems.forEach(k=>{
+        const op=getOp(k);
+        const isReq=p&&p[k]&&p[k].verdict==='req';
+        const verdictLabel=isReq?'수정 의견 제시':'양호';
+        const verdictCol=isReq?'a32d2d':'1d6a3a';
+        body+=tr(
+          cell(ITEM_T[k],2400,'f0f4fa',true,19,'1a3d6b'),
+          cell(`[${verdictLabel}] ${CORE_Q[k]||''}`,6240,'f0f4fa',false,19,'333333')
+        );
+        if(op){
+          body+=`<w:tr>${cellFull('✎ 점검 의견\n'+op,isReq?'fdecea':'f0f4fa',false,19,verdictCol)}</w:tr>`;
+        }
+      });
+      body+=tblClose;
+    }
+
+    // B영역 경고문
+    if(hasAIssue){
+      body+=`<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="8" w:space="4" w:color="f9a825"/></w:pBdr><w:ind w:left="200"/>${sp(80)}</w:pPr><w:r>${rpr(19,false,'7d4a00')}<w:t xml:space="preserve">⚠️ A 영역(정합성)에서 수정 의견이 제시되었습니다. 채점기준표가 신뢰롭게 작성되었더라도 수행과제와 성취기준의 정합성이 확보되지 않은 상태에서는 성취기준 도달 정도를 측정한다고 보기 어렵습니다. B 영역의 점검 결과는 A 영역 수정을 전제로 참고하시기 바랍니다.</w:t></w:r></w:p>`;
+    }
+
+    // ── B영역: 수정의견(req) 또는 수동 의견 작성된 항목 모두 출력
+    const bItems=['B1','B2'].filter(k=>{
+      const isReq=p&&p[k]&&p[k].verdict==='req';
+      const hasOp=getOp(k).trim()!=='';
+      return isReq||hasOp;
+    });
+    if(bItems.length>0){
+      body+=para('B. 채점기준표의 신뢰성',22,true,'1a3d6b',60);
+      body+=tblOpen;
+      body+=tr(
+        cell('점검 항목',2400,'1a3d6b',true,19,'ffffff'),
+        cell('핵심 질문',6240,'1a3d6b',true,19,'ffffff')
+      );
+      bItems.forEach(k=>{
+        const op=getOp(k);
+        const isReq=p&&p[k]&&p[k].verdict==='req';
+        const verdictLabel=isReq?'수정 의견 제시':'양호';
+        const verdictCol=isReq?'a32d2d':'1d6a3a';
+        body+=tr(
+          cell(ITEM_T[k],2400,'f0f4fa',true,19,'1a3d6b'),
+          cell(`[${verdictLabel}] ${CORE_Q[k]||''}`,6240,'f0f4fa',false,19,'333333')
+        );
+        if(op){
+          body+=`<w:tr>${cellFull('✎ 점검 의견\n'+op,isReq?'fdecea':'f0f4fa',false,19,verdictCol)}</w:tr>`;
+        }
+      });
+      body+=tblClose;
+    }
+
+    // ── 항목 3: 체크박스 또는 수동 의견이 있으면 출력
+    if(cl4Checked||cl4Op){
+      body+=para('3. 평가 운영의 적절성',22,true,'1a3d6b',60);
+      body+=tblOpen;
+      body+=tr(
+        cell('점검 항목',2400,'1a3d6b',true,19,'ffffff'),
+        cell('핵심 질문',6240,'1a3d6b',true,19,'ffffff')
+      );
+      const cl4Map=[
+        {keys:['CL4_s1','CL4_s2'],title:'3-1. 암기형 — 정해진 답을 재현하는 구조',q:'정해진 답을 재현하는 암기형으로 운영될 가능성이 없는가?'},
+        {keys:['CL4_s3'],title:'3-2. 과제형 — 수업 중 완성 가능성',q:'수업 중 완성 가능한 분량과 내용으로 설계되어 있는가?'},
+        {keys:['CL4_s4'],title:'3-3. AI 대리 수행 — 생성형 AI 활용 조건',q:'AI 활용 조건·제한이 명시되어 있는가?'},
+      ];
+      const anyChecked=cl4Map.filter(m=>m.keys.some(k=>{const cb=document.getElementById(`cl4cb-${i}-${k}`);return cb&&cb.checked;}));
+      if(anyChecked.length>0){
+        anyChecked.forEach(m=>{
+          body+=tr(
+            cell(m.title,2400,'f0f4fa',true,19,'1a3d6b'),
+            cell(m.q,6240,'f0f4fa',false,19,'333333')
+          );
+        });
+      } else {
+        // 체크박스 없이 의견만 직접 작성한 경우
+        body+=tr(
+          cell('직접 작성',2400,'f0f4fa',true,19,'1a3d6b'),
+          cell('점검단이 직접 작성한 의견입니다.',6240,'f0f4fa',false,19,'333333')
+        );
+      }
+      if(cl4Op){
+        body+=`<w:tr>${cellFull('✎ 점검 의견\n'+cl4Op,'fdecea',false,19,'a32d2d')}</w:tr>`;
+      }
+      body+=tblClose;
+    }
+
+    // ── 기타
+    if(etcOp){
+      body+=para('기타 수정 의견',21,true,'c4922a',60);
+      body+=`<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="8" w:space="4" w:color="c4922a"/></w:pBdr><w:ind w:left="200"/>${sp(120)}</w:pPr><w:r>${rpr(20,false,'333333')}<w:t xml:space="preserve">${esc(etcOp)}</w:t></w:r></w:p>`;
+    }
+
+    // ── 종합의견
+    if(overallOp){
+      body+=para('종합의견',22,true,'1a3d6b',60);
+      body+=`<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="12" w:space="4" w:color="1a3d6b"/></w:pBdr><w:ind w:left="200"/>${sp(120)}</w:pPr><w:r>${rpr(21,false,'222222')}<w:t xml:space="preserve">${esc(overallOp)}</w:t></w:r></w:p>`;
+    }
+  }
+
+  // ZIP
+  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr></w:body></w:document>`;
+  zip.file('[Content_Types].xml',`<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
+  zip.file('_rels/.rels',`<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  zip.file('word/document.xml',docXml);
+  zip.file('word/_rels/document.xml.rels',`<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`);
+  zip.generateAsync({type:'blob'}).then(blob=>{
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`컨설팅결과_${sn}_${sub}.docx`;
+    a.click();toast('워드 파일 저장 완료');
+  });
+}
+
+// ═══════════════════════════════════════════
+// 초기화
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('consulting26-v4');
+  if(saved){
+    try{
+      const d=JSON.parse(saved);
+      S.aiProvider=d.aiProvider||'none';
+      S.perfCount=d.perfCount||1;
+      while(S.performances.length<S.perfCount)S.performances.push(initPerf());
+      if(d.performances)d.performances.forEach((p,i)=>{
+        if(S.performances[i])Object.assign(S.performances[i],p);
+      });
+      document.getElementById('schoolLevel').value=d.schoolLevel||'';
+      document.getElementById('schoolName').value=d.schoolName||'';
+      document.getElementById('subjectName').value=d.subjectName||'';
+      document.getElementById('cntDisplay').textContent=S.perfCount;
+      document.getElementById('cntMinus').disabled=S.perfCount<=1;
+      document.getElementById('cntPlus').disabled=S.perfCount>=12;
+    }catch(e){console.error(e);}
+  } else {
+    S.performances.push(initPerf());
+  }
+  renderPerfs();
+  selectAI(S.aiProvider);
+});
+</script>
+</body>
+</html>
