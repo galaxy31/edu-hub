@@ -290,6 +290,14 @@ body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:14px;backg
     <div class="form-row" style="margin-top:14px;">
       <div class="form-group" style="grid-column:1 / -1;">
         <label>📄 통합 평가계획서 업로드 (자동 인식) <span style="font-size:11px;font-weight:400;color:var(--gray);">— 한 학교의 전체 평가계획서 PDF(전 과목 통합)를 올리면 학교급·학교명·과목·수행평가명을 자동으로 인식합니다</span></label>
+        <label class="plan-ai-toggle" for="planAIMode" style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:#fafcff;cursor:pointer;">
+          <input type="checkbox" id="planAIMode" onchange="onPlanAIModeChange()" style="margin-top:2px;">
+          <span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--navy);">🤖 AI로 자동 인식 (권장 · 누락 최소화)</span><br>
+            <span style="font-size:11px;color:var(--gray);">규칙 기반 인식은 서식이 특이한 학교에서 일부 과목·수행평가명이 누락될 수 있습니다. AI 인식을 켜면 과목별 구간을 AI가 직접 읽어 더 정확하게 추출합니다(시간이 더 걸리고 STEP 0의 AI 토큰을 소비합니다).</span><br>
+            <span id="planAIModeOffNotice" style="display:none;font-size:11px;color:var(--warn);">⚠️ STEP 0에서 AI(Gemini 또는 Claude)를 선택하고 API 키를 등록해야 사용할 수 있습니다.</span>
+          </span>
+        </label>
         <div class="upload-zone" id="uz-plan">
           <input type="file" accept="application/pdf,.pdf" onchange="handlePlanPdf(event)">
           <div style="font-size:13px;font-weight:700;color:var(--navy);">클릭하거나 PDF를 드래그하세요</div>
@@ -297,7 +305,7 @@ body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:14px;backg
         </div>
         <div class="ai-loading" id="planload">
           <div class="ai-spinner"></div>
-          <div style="font-size:12px;font-weight:700;color:var(--navy);">PDF 분석 중... 페이지 수에 따라 몇 초~수십 초 걸릴 수 있습니다</div>
+          <div style="font-size:12px;font-weight:700;color:var(--navy);" id="planLoadMsg">PDF 분석 중... 페이지 수에 따라 몇 초~수십 초 걸릴 수 있습니다</div>
         </div>
         <div id="planResultWrap" style="display:none;margin-top:10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
@@ -540,6 +548,7 @@ const CL4_ITEMS = [
 // ═══════════════════════════════════════════
 let S = {
   aiProvider:'none',
+  planAIMode:false,
   perfCount:1,
   performances:[]
 };
@@ -574,6 +583,24 @@ function selectAI(p){
     const uw=document.getElementById('upload-wrap-'+i);
     if(uw) uw.style.display = p==='none' ? 'none' : 'block';
   }
+  updatePlanAIModeAvailability();
+}
+
+// 통합 평가계획서 AI 자동 인식 토글 가능 여부 갱신
+function updatePlanAIModeAvailability(){
+  const cb=document.getElementById('planAIMode');
+  const offNotice=document.getElementById('planAIModeOffNotice');
+  if(!cb) return;
+  const available = S.aiProvider!=='none';
+  cb.disabled = !available;
+  if(offNotice) offNotice.style.display = available?'none':'block';
+  if(!available){ cb.checked=false; S.planAIMode=false; }
+}
+
+function onPlanAIModeChange(){
+  const cb=document.getElementById('planAIMode');
+  S.planAIMode = !!(cb && cb.checked);
+  saveData();
 }
 function toast(msg){
   const el=document.getElementById('toast');
@@ -1656,6 +1683,7 @@ function applyAI(i,result){
 function saveData(){
   const snap={
     aiProvider:S.aiProvider,
+    planAIMode:S.planAIMode,
     schoolLevel:document.getElementById('schoolLevel').value,
     schoolName:document.getElementById('schoolName').value,
     subjectName:document.getElementById('subjectName').value,
@@ -1746,10 +1774,13 @@ function resetAll(){
 
 // ═══════════════════════════════════════════
 // 통합 평가계획서 PDF 자동 인식
-//  - 텍스트 규칙 기반 파싱(pdf.js). AI API 미사용.
+//  - 기본: 텍스트 규칙 기반 파싱(pdf.js). AI API 미사용.
 //  - "OO학년도 O학기 [과목]과 교수학습 및 평가(운영)계획" 타이틀 단위로
 //    과목 구간을 나누고, 그 안의 "수행평가 영역별 세부 기준"에서
 //    가./나./다... 또는 학년별(가.1학년→1)2)...) 수행평가명을 추출한다.
+//  - "AI로 자동 인식" 토글을 켜면(STEP 0에서 AI 등록 필요) 구간 분리는
+//    동일하게 사용하되, 마커가 어긋나 누락되기 쉬운 수행평가명 추출을
+//    AI가 대신 읽어 처리한다(parseIntegratedPlanAI, 아래 정의).
 // ═══════════════════════════════════════════
 let EXTRACTED_SUBJECTS=[]; // [{subject, grade, names:[...]}]
 let EXTRACTED_SCHOOL={name:'', level:''};
@@ -1846,30 +1877,154 @@ function parsePerfNames(detail){
   return {flat:flat.filter(isValid)};
 }
 
-function parseIntegratedPlan(text){
-  // pdf.js가 숫자와 뒤따르는 한글 단위(학년도/학기/학년/반) 사이에 잘못 끼워넣는
-  // 공백을 정리한다("2026 학년도" → "2026학년도").
+// pdf.js가 숫자와 뒤따르는 한글 단위(학년도/학기/학년/반) 사이에 잘못 끼워넣는
+// 공백을 정리하고, "OO학년도 O학기 [과목]과 교수학습 및 평가(운영)계획" 타이틀
+// 단위로 텍스트를 과목 구간으로 나눈다. 규칙 기반·AI 기반 인식이 이 구간 분리를
+// 공유한다.
+function splitPlanSections(text){
   text = text.replace(/(\d)\s+(학년도|학기|학년|반)/g,'$1$2');
   const titleRe=/\d{4}학년도\s*\d학기\s*\[?\s*([가-힣ㆍ·\s]{1,20}?)\s*\]?\s*과\s*교수\s*[·ㆍ.․]?\s*학습\s*및\s*평가\s*(?:운영\s*)?계획/g;
   const matches=[]; let m;
   while((m=titleRe.exec(text))) matches.push({index:m.index, end:titleRe.lastIndex, subject:m[1].replace(/\s+/g,'')});
   let schoolName='';
-  const subjects=[];
+  const sections=[];
   matches.forEach((mt,idx)=>{
     const sectionEnd=idx+1<matches.length? matches[idx+1].index : text.length;
-    const section=text.slice(mt.end, sectionEnd);
-    const infoM=section.match(/학교명\s*학년\s*과목\s*학기\s*학급\s*지도교사\s*([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)/);
+    const sectionText=text.slice(mt.end, sectionEnd);
+    const infoM=sectionText.match(/학교명\s*학년\s*과목\s*학기\s*학급\s*지도교사\s*([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)/);
     let grade='';
     if(infoM){ if(!schoolName) schoolName=infoM[1]; grade=infoM[2]; }
-    const detailM=section.match(/수행평가\s*영역별\s*세부\s*기준([\s\S]*?)(?=평가\s*미응시자|$)/);
+    sections.push({subject:mt.subject, grade, sectionText});
+  });
+  return {schoolName, sections, normalizedText:text};
+}
+
+// 규칙 기반(텍스트 패턴) 인식 — pdf.js 텍스트만 사용, AI API 미사용.
+function parseIntegratedPlanRuleBased(text){
+  const {schoolName, sections}=splitPlanSections(text);
+  const subjects=[];
+  sections.forEach(sec=>{
+    const detailM=sec.sectionText.match(/수행평가\s*영역별\s*세부\s*기준([\s\S]*?)(?=평가\s*미응시자|$)/);
     if(!detailM) return;
     const items=parsePerfNames(detailM[1]);
     if(items.byGrade){
-      Object.keys(items.byGrade).forEach(g=>subjects.push({subject:mt.subject, grade:g, names:items.byGrade[g]}));
+      Object.keys(items.byGrade).forEach(g=>subjects.push({subject:sec.subject, grade:g, names:items.byGrade[g]}));
     } else if(items.flat.length){
-      subjects.push({subject:mt.subject, grade:grade, names:items.flat});
+      subjects.push({subject:sec.subject, grade:sec.grade, names:items.flat});
     }
   });
+  return {school:{name:schoolName, level:guessSchoolLevel(schoolName)}, subjects};
+}
+
+// ═══════════════════════════════════════════
+// 통합 평가계획서 AI 자동 인식 (선택 기능)
+//  - 규칙 기반 파싱은 "가./나./다..." 같은 정형 마커가 어긋나면 항목이
+//    통째로 누락될 수 있어, STEP 0에서 등록한 AI로 과목 구간별 텍스트를
+//    직접 읽혀 수행평가명을 추출한다. 구간 분리 자체(과목 제목 인식)는
+//    표준 서식이라 규칙 기반을 그대로 재사용하고, 누락이 잦은
+//    "수행평가명 목록 추출"만 AI에 맡긴다.
+// ═══════════════════════════════════════════
+const PLAN_AI_SYS = `당신은 학교 수행평가 계획서 PDF에서 정보를 정확하게 추출하는 전문가입니다.
+아래는 하나의 과목(학년) 평가계획서 구간의 원문 텍스트입니다(PDF에서 추출되어 줄바꿈·표 구조가 깨져 있을 수 있습니다). 이 구간에서 실제로 시행되는 "수행평가"의 개별 이름(과제명)만 문서에 등장하는 순서대로 빠짐없이 추출하세요.
+
+규칙:
+- 채점기준표의 세부 평가 요소, 배점표, 성취기준 코드, 유의사항, 평가 미응시자 처리 규정 등은 수행평가명이 아니므로 제외
+- 학년별로 구분되어 있으면(예: 1학년/2학년) 학년마다 별도 그룹으로 나눠 작성
+- "가./나./다..." 또는 "1)2)3)..." 같은 정형 마커가 없어도, 문맥상 몇 개의 수행평가가 실제로 시행되는지 정확히 판단해 모두 추출(마커 누락·오타·서식 붕괴로 인한 누락 방지가 핵심 목적)
+- 수행평가명이 긴 서술형으로만 되어 있으면 문서 표현을 최대한 살려 20자 내외로 간결하게 요약
+- 같은 항목을 중복해서 넣지 말 것
+
+반드시 아래 JSON 형식으로만 응답하세요(다른 설명 텍스트 금지):
+{"groups":[{"grade":"학년 표기(구분 없으면 빈 문자열)","names":["수행평가명1","수행평가명2"]}]}
+학년 구분이 없으면 groups 배열에 항목 1개만 넣고 grade는 빈 문자열로 두세요.`;
+
+const PLAN_AI_SYS_WHOLE = `당신은 학교 통합 수행평가 계획서 PDF 전문에서 정보를 추출하는 전문가입니다.
+아래는 여러 과목의 평가계획이 이어진 PDF 전체(또는 일부) 텍스트입니다. 표준 제목 서식과 달라 자동 구간 분리에 실패했으니, 문서 전체를 직접 검토해 과목(학년)별로 구분하고 각 과목(학년)에서 시행되는 수행평가의 개별 이름(과제명)을 순서대로 빠짐없이 추출하세요.
+
+규칙:
+- 채점기준표 세부 항목, 배점, 성취기준 코드는 수행평가명이 아니므로 제외
+- 같은 과목이라도 학년이 다르면 별도 그룹으로 구분
+- 학교명을 문서에서 찾을 수 있으면 함께 추출(없으면 빈 문자열)
+
+반드시 아래 JSON 형식으로만 응답하세요(다른 설명 텍스트 금지):
+{"school":"학교명 또는 빈 문자열","subjects":[{"subject":"과목명","grade":"학년(없으면 빈 문자열)","names":["수행평가명1","수행평가명2"]}]}`;
+
+async function callPlanAIRaw(sys, userText){
+  if(S.aiProvider==='gemini'){
+    const key=document.getElementById('geminiKey').value.trim();
+    const model=document.getElementById('geminiModel').value;
+    if(!key) throw new Error('Gemini API 키가 없습니다');
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({contents:[{parts:[{text:sys+'\n\n'+userText}]}],
+       generationConfig:{temperature:0.1,maxOutputTokens:4000,responseMimeType:'application/json'}})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||('HTTP '+r.status));}
+    const d=await r.json();
+    return parseJ(d.candidates?.[0]?.content?.parts?.[0]?.text||'');
+  } else if(S.aiProvider==='claude'){
+    const key=document.getElementById('claudeKey').value.trim();
+    if(!key) throw new Error('Claude API 키가 없습니다');
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,system:sys,messages:[{role:'user',content:userText}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||('HTTP '+r.status));}
+    const d=await r.json();
+    return parseJ(d.content?.find(c=>c.type==='text')?.text||'');
+  }
+  throw new Error('AI가 설정되지 않았습니다(STEP 0 확인)');
+}
+
+// 과목(학년) 구간이 너무 길면 토큰 절약을 위해 앞부분만 사용
+// (수행평가 영역별 세부 기준은 보통 구간 앞쪽에 등장)
+const PLAN_AI_SECTION_CAP=60000;
+const PLAN_AI_WHOLE_CAP=700000;
+
+async function parseIntegratedPlanAI(text, onProgress){
+  const {schoolName, sections}=splitPlanSections(text);
+  if(sections.length===0){
+    // 표준 제목 서식과 달라 구간 분리에 실패한 경우: 전체 텍스트를 통째로 AI에 맡긴다
+    onProgress && onProgress(1,1,'전체 문서(구간 인식 실패로 통째 분석)');
+    return await parseIntegratedPlanAIWhole(text);
+  }
+  const subjects=[];
+  for(let i=0;i<sections.length;i++){
+    const sec=sections[i];
+    onProgress && onProgress(i+1, sections.length, sec.subject+(sec.grade?'('+sec.grade+')':''));
+    const capped = sec.sectionText.length>PLAN_AI_SECTION_CAP ? sec.sectionText.slice(0,PLAN_AI_SECTION_CAP) : sec.sectionText;
+    const label=`[과목: ${sec.subject}${sec.grade?' ('+sec.grade+')':''}]\n\n`;
+    let handled=false;
+    try{
+      const res=await callPlanAIRaw(PLAN_AI_SYS, label+capped);
+      const groups=Array.isArray(res.groups)?res.groups:[];
+      groups.forEach(g=>{
+        const names=(g.names||[]).map(n=>String(n).trim()).filter(Boolean);
+        if(names.length){ subjects.push({subject:sec.subject, grade:(g.grade||sec.grade||'').trim(), names}); handled=true; }
+      });
+    }catch(e){
+      console.error('통합 평가계획서 AI 인식 오류('+sec.subject+'):', e);
+    }
+    if(!handled){
+      // AI가 빈 결과를 주거나 오류가 난 과목만 규칙 기반으로 보완
+      const detailM=sec.sectionText.match(/수행평가\s*영역별\s*세부\s*기준([\s\S]*?)(?=평가\s*미응시자|$)/);
+      if(detailM){
+        const items=parsePerfNames(detailM[1]);
+        if(items.byGrade) Object.keys(items.byGrade).forEach(g=>subjects.push({subject:sec.subject, grade:g, names:items.byGrade[g]}));
+        else if(items.flat.length) subjects.push({subject:sec.subject, grade:sec.grade, names:items.flat});
+      }
+    }
+  }
+  return {school:{name:schoolName, level:guessSchoolLevel(schoolName)}, subjects};
+}
+
+async function parseIntegratedPlanAIWhole(text){
+  const capped = text.length>PLAN_AI_WHOLE_CAP ? text.slice(0,PLAN_AI_WHOLE_CAP) : text;
+  const res=await callPlanAIRaw(PLAN_AI_SYS_WHOLE, capped);
+  const subjects=Array.isArray(res.subjects)? res.subjects.map(s=>({
+    subject:String(s.subject||'').trim()||'미상',
+    grade:String(s.grade||'').trim(),
+    names:(s.names||[]).map(n=>String(n).trim()).filter(Boolean)
+  })).filter(s=>s.names.length) : [];
+  const schoolName=String(res.school||'').trim();
   return {school:{name:schoolName, level:guessSchoolLevel(schoolName)}, subjects};
 }
 
@@ -1878,13 +2033,29 @@ function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 async function handlePlanPdf(ev){
   const f=ev.target.files[0];
   if(!f) return;
+  const aiMode = !!(document.getElementById('planAIMode')?.checked && S.aiProvider!=='none');
+  const msgEl=document.getElementById('planLoadMsg');
+  const defaultMsg='PDF 분석 중... 페이지 수에 따라 몇 초~수십 초 걸릴 수 있습니다';
   document.getElementById('planload').style.display='block';
   document.getElementById('planResultWrap').style.display='none';
+  if(msgEl) msgEl.textContent = aiMode ? 'PDF 텍스트 추출 중...' : defaultMsg;
   try{
     await ensurePdfJs();
     const buf=await f.arrayBuffer();
     const text=await extractPdfFullText(buf);
-    const parsed=parseIntegratedPlan(text);
+    let parsed;
+    if(aiMode){
+      parsed = await parseIntegratedPlanAI(text, (cur,total,label)=>{
+        if(msgEl) msgEl.textContent=`🤖 AI 인식 중... (${cur}/${total}) ${label}`;
+      });
+      if(parsed.subjects.length===0){
+        // AI 경로가 완전히 실패하면 규칙 기반으로 한 번 더 시도
+        if(msgEl) msgEl.textContent='AI 인식 결과가 없어 규칙 기반으로 다시 시도 중...';
+        parsed = parseIntegratedPlanRuleBased(text);
+      }
+    } else {
+      parsed = parseIntegratedPlanRuleBased(text);
+    }
     if(parsed.subjects.length===0){
       toast('과목을 인식하지 못했습니다. PDF 형식을 확인해주세요.');
     } else {
@@ -1896,13 +2067,14 @@ async function handlePlanPdf(ev){
       saveData();
       renderExtractedTable();
       document.getElementById('nextSubjectWrap').style.display=EXTRACTED_SUBJECTS.length?'block':'none';
-      toast(`${parsed.subjects.length}개 과목(학년) 인식 완료`);
+      toast(`${parsed.subjects.length}개 과목(학년) 인식 완료${aiMode?' (AI)':''}`);
     }
   }catch(e){
     console.error(e);
     toast('PDF 분석 중 오류가 발생했습니다: '+(e.message||e));
   }finally{
     document.getElementById('planload').style.display='none';
+    if(msgEl) msgEl.textContent=defaultMsg;
     ev.target.value='';
   }
 }
@@ -2387,6 +2559,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     try{
       const d=JSON.parse(saved);
       S.aiProvider=d.aiProvider||'none';
+      S.planAIMode=!!d.planAIMode;
       S.perfCount=d.perfCount||1;
       while(S.performances.length<S.perfCount)S.performances.push(initPerf());
       if(d.performances)d.performances.forEach((p,i)=>{
@@ -2403,6 +2576,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     S.performances.push(initPerf());
   }
   renderPerfs();
+  const planAICb=document.getElementById('planAIMode');
+  if(planAICb) planAICb.checked=S.planAIMode;
   selectAI(S.aiProvider);
 });
 </script>
