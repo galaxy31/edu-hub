@@ -249,7 +249,11 @@ body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:14px;backg
     <div class="api-panel" id="ai-panel-none">
       <div class="notice" style="margin:0;">AI 미사용 — 모든 항목을 수동으로 체크하고 의견을 직접 작성합니다.</div>
     </div>
-    <div style="font-size:11.5px;color:var(--gray);margin-top:12px;line-height:1.8;">🔒 API 키는 브라우저 메모리에만 임시 저장되며 외부로 전송·저장되지 않습니다.<br>📋 학생 개인정보가 포함된 이미지는 업로드하지 마세요.</div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--navy);font-weight:600;cursor:pointer;">
+      <input type="checkbox" id="saveKeysToggle" checked onchange="onSaveKeysToggle()">
+      💾 이 브라우저에 API 키 저장 (다음에 다시 입력하지 않아도 됨)
+    </label>
+    <div style="font-size:11.5px;color:var(--gray);margin-top:6px;line-height:1.8;">🔒 저장을 켜면 API 키는 이 브라우저(localStorage)에만 저장되며, Anthropic/Google 서버 등 각 AI 제공사 API로 직접 전송되는 것 외에는 외부로 전송되지 않습니다. 저장을 끄면 즉시 삭제되고, 다음 접속 시 다시 입력해야 합니다. 공용 컴퓨터에서는 꺼두는 것을 권장합니다.<br>📋 학생 개인정보가 포함된 이미지는 업로드하지 마세요.</div>
     <div id="ai-limit-notice" style="display:none;margin-top:14px;background:#fff8e1;border:1.5px solid #f9a825;border-radius:6px;padding:12px 14px;font-size:12px;color:#5a3e00;line-height:1.85;">
       <div style="font-weight:800;margin-bottom:6px;font-size:12.5px;">🔍 AI 분석 한계 및 활용 안내 — 반드시 확인하세요</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
@@ -621,6 +625,48 @@ function onKeyInput(p){
   const st=document.getElementById(p+'-status');
   if(k.length>8){dot.className='api-dot ok';st.textContent='키 입력됨';}
   else{dot.className='api-dot';st.textContent='키를 입력하세요';}
+  saveApiKeys();
+}
+
+// ═══════════════════════════════════════════
+// API 키 브라우저 저장 (선택) — 켜져 있으면 localStorage에 저장해
+// 다음 방문 시 자동으로 채워준다. 각 AI 제공사 API로 직접 전송되는
+// 것 외에는 외부로 전송되지 않는다.
+// ═══════════════════════════════════════════
+function saveApiKeys(){
+  const cb=document.getElementById('saveKeysToggle');
+  const enabled = cb ? cb.checked : true;
+  if(!enabled){
+    // 저장 끔 상태 자체는 기억하되, 키 값은 즉시 지운다
+    try{localStorage.setItem('consulting26-keys', JSON.stringify({saveEnabled:false, gemini:'', claude:''}));}catch(e){}
+    return;
+  }
+  const gemini=document.getElementById('geminiKey')?.value.trim()||'';
+  const claude=document.getElementById('claudeKey')?.value.trim()||'';
+  try{localStorage.setItem('consulting26-keys', JSON.stringify({saveEnabled:true, gemini, claude}));}catch(e){}
+}
+
+function loadApiKeys(){
+  try{
+    const raw=localStorage.getItem('consulting26-keys');
+    if(!raw) return;
+    const d=JSON.parse(raw);
+    const cb=document.getElementById('saveKeysToggle');
+    const enabled = d.saveEnabled!==false;
+    if(cb) cb.checked = enabled;
+    if(enabled){
+      if(d.gemini) document.getElementById('geminiKey').value=d.gemini;
+      if(d.claude) document.getElementById('claudeKey').value=d.claude;
+      onKeyInput('gemini');
+      onKeyInput('claude');
+    }
+  }catch(e){}
+}
+
+function onSaveKeysToggle(){
+  saveApiKeys();
+  if(document.getElementById('saveKeysToggle')?.checked) toast('이 브라우저에 API 키가 저장됩니다');
+  else toast('저장된 API 키를 삭제했습니다');
 }
 async function testKey(p){
   toast('연결 테스트 중...');
@@ -2576,6 +2622,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     S.performances.push(initPerf());
   }
   renderPerfs();
+  loadApiKeys();
   const planAICb=document.getElementById('planAIMode');
   if(planAICb) planAICb.checked=S.planAIMode;
   selectAI(S.aiProvider);
